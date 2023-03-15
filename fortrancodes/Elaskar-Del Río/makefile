@@ -34,7 +34,7 @@ bin_name_01 = Intermittency_type_III_M_function
 bin_name_02 = Intermittency_type_III_cobweb
 
 # object dependencies
-dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o
+dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o vector_statistics.o
 
 # binary rules
 # Intermittency_type_III_M_function
@@ -61,6 +61,7 @@ mod_name_06 = matrixalgebra
 mod_name_07 = functions
 mod_name_08 = neuronmodels
 mod_name_09 = maps
+mod_name_10 = vector_statistics
 
 # module recipes
 $(mod_name_01).o:
@@ -71,12 +72,16 @@ $(mod_name_09).o: $(mod_name_01).o
 	$(FC) -c $(mod_path)$(mod_name_09).f90
 $(mod_name_06).o: $(mod_name_01).o
 	$(FC) -c $(mod_path)$(mod_name_06).f90
+$(mod_name_10).o: $(mod_name_01).o $(mod_name_06).o
+	$(FC) -c $(mod_path)$(mod_name_10).f90
+	
 	
 # ====================================================================
 # Sources
 # ====================================================================
 bin_name_01_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
-${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 ${bin_name_01}.f90
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${mod_path}${mod_name_10}.f90 ${bin_name_01}.f90
 
 bin_name_02_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
 ${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 ${bin_name_02}.f90
@@ -89,7 +94,7 @@ run_cmd = run_
 
 # Intermittency type III M(x)
 $(bin_name_01): $(bin_name_01).o $(bin_name_01).f90 $(mod_name_01).o \
-$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
 	$(FC) $(FFLAGS) -o $@ $(bin_name_01_src)
 $(run_cmd)$(bin_name_01): $(bin_name_01)
 	@./$(bin_name_01)
