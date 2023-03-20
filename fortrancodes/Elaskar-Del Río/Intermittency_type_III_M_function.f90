@@ -32,7 +32,7 @@ program Intermittency_type_III_M_function
     n_bins = 100_dp
 
     ! Intended number of reinjected points
-    n_reinjected = 10000_dp
+    n_reinjected = 15000_dp
 
     ! Allocation and initialization of different vectors of interest
     allocate(M_x(n_reinjected))
@@ -43,16 +43,15 @@ program Intermittency_type_III_M_function
     x_avg = 0._dp
     x_bins = 0._dp; M_x_avg = 0._dp; counter = 0_dp;
     x_reinjected = 0._dp; x_reinjected_sorted = 0._dp
-    !x_bins = linspace(x_start, x_end, n_bins)
 
     ! Parameters of the map
     eps = [0.01_dp, 0.0001_dp]
     a = [1._dp, 1.1_dp]
     d = [1.1_dp, 1.35_dp]
 
+
     ! Loop through both set of parameters
     do i = 1,1
-        !write(*,*) i
         xn = grnd()
         ! Loop to obtained the desired amount of reinjection points
         k = 0_dp
@@ -77,32 +76,81 @@ program Intermittency_type_III_M_function
             do k = 1,j
                 M_x(j) = M_x(j) + x_reinjected_sorted(k)
             enddo
+            M_x(j) = M_x(j)/real(j,dp)
             if (i == 1_dp) then
-                write(13,"(2(E16.6))") x_reinjected_sorted(j),M_x(j)/real(j,dp)
+                write(13,"(2(E16.6))") x_reinjected_sorted(j),M_x(j)
             else if (i == 2_dp) then
-                write(16,"(2(E16.6))") x_reinjected_sorted(j),M_x(j)/real(j,dp)
+                write(16,"(2(E16.6))") x_reinjected_sorted(j),M_x(j)
             endif
         enddo
 
-        ! 
+        ! Obtain the averaged reinjected values.
         x_avg = x_n_avg(x_reinjected_sorted,n_bins)
-
+        M_x_avg = 0._dp
         ! Compute M function with averages
-        do j = 1,n_bins
+        do j = 1,n_bins-1
             do k = 1,j
-                M_x_avg(j) = M_x_avg(j) + x_avg(j)
+                M_x_avg(j) = M_x_avg(j) + x_avg(k)
             enddo
+            M_x_avg(j) = M_x_avg(j)/real(j,dp)
             if (i == 1_dp) then
-                write(14,"(2(E16.6))") x_avg(j),M_x_avg(j)/real(j,dp)
+                write(14,"(2(E16.6))") x_avg(j),M_x_avg(j)
             else if (i == 2_dp) then
-                write(17,"(2(E16.6))") x_avg(j),M_x_avg(j)/real(j,dp)
+                write(17,"(2(E16.6))") x_avg(j),M_x_avg(j)
             endif
         enddo
 
-        M_x = 0._dp; counter = 0_dp; M_x_avg = 0._dp; x_reinjected = 0._dp; x_reinjected_sorted = 0._dp
+        M_x_avg = 0._dp;M_x = 0._dp; counter = 0_dp; x_reinjected = 0._dp; x_reinjected_sorted = 0._dp
     enddo
 
-    
 
+    open(18,file='test.dat',status='replace')
+    open(19,file='testavg.dat',status='replace')
+    open(20,file='testdif.dat',status='replace')
+    
+    do k = 1,4
+        x_reinjected = linspace(0._dp,c,n_reinjected)
+
+        do i = 1,n_reinjected
+            x_reinjected(i) = x_reinjected(i)**(real(k/2._dp,dp))
+        enddo
+
+        do i = 1,n_reinjected
+            do j = 1,i
+                M_x(i) = M_x(i) + x_reinjected(j)
+            enddo
+            M_x(i) = M_x(i)/real(i,dp)
+            write(18,*) (x_reinjected(i)-minval(x_reinjected))/(maxval(x_reinjected)-minval(x_reinjected))&
+            &,M_x(i)
+        enddo
+        
+        x_avg = x_n_avg(x_reinjected,n_bins)
+        do i = 1,n_bins
+            do j = 1,i
+                M_x_avg(i) = M_x_avg(i) + x_avg(j)
+            enddo
+            M_x_avg(i) = M_x_avg(i)/real(i,dp)
+            write(19,*) (x_avg(i)-minval(x_avg))/(maxval(x_avg)-minval(x_avg))&
+            &,M_x_avg(i)
+        enddo
+
+        do i = 1,n_bins
+            write(20,"(2(E16.6))") (x_avg(i)-minval(x_avg))/(maxval(x_avg)-minval(x_avg))&
+            &,(M_x(i*150)-M_x_avg(i))/M_x(i*150)
+        enddo
+
+        M_x_avg = 0._dp;M_x = 0._dp; counter = 0_dp; x_reinjected = 0._dp; x_reinjected_sorted = 0._dp
+
+    enddo
+
+    close(12)
+    close(13)
+    close(14)
+    close(15)
+    close(16)
+    close(17)
+    close(18)
+    close(19)
+    close(20)
 
 end program Intermittency_type_III_M_function
