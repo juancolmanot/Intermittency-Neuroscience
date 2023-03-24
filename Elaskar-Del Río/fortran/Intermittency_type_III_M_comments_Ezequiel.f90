@@ -191,7 +191,191 @@ program Intermittency_type_III_M_prob_comments_Ezequiel
             fmpgen(j) = 0.d0
         end if
     end do
-        
+
+    ! Here we detect a reinjected point into the laminar interval and both
+    ! store its value and the index of iterations in order to compare it 
+    ! to the same number for when it leaves the laminar zone, and compute
+    ! the numerical laminar length. Also compute the theoretical
+    ! laminar lengths according to Kim 1998 and Elaskar.
+    if (x .ge. xmax .or. x .le. xmin) then
+        if (y .ge. xmin .and. y .le. xmax) then
+          yden = y  !valor de "y" reinyectado en la zona laminar usando como centro de cordendas el punto (dx,dy)
+          xden = x  !valor de "x" fuera de la zona laminar desde el cual reingresa "y" a la zona laminar usando como centro de cordendas el punto (dx,dy)
+          k = j
+          ke = ke + 1
+          yd(ke) = y !valor de "y" reinyectado en la zona laminar usando como centro de cordendas el punto (dx,dy)
+          write (40,200) xden, yden   ! archivo 40 es "para matematica.txt"
+  
+          lolate(ke) = (dlog(xint/abs(yden)) - 0.5d0*dlog((aa*xint*xint+epsi)/(aa*yden*yden+epsi))) / epsi  
+          ! lolate es la longitud laminar teorica dada por ec.(1) paper Kim de 1998
+  
+          lolates(ke) = (dlog(xint/abs(yden)) - 0.5d0*dlog((aa*xint*xint+0.5d0*epsi)/(aa*yden*yden+0.5d0*epsi))) / (0.5d0)*epsi  
+          ! lolate es la longitud laminar teorica calculada por mi
+  
+  
+        end if
+    end if
+  
+    ! When the point leaves the laminar region, the laminar length is computed.
+    if (y .ge. xmax .or. y .le. xmin) then
+        if (x .ge. xmin .and. x .le. xmax) then
+            yfue = y
+            xfue = x  !valor de "x" dentro de la zona laminar desde el cual "y" sale de la zona laminar usando como centro de cordendas el punto (dx,dy)
+            l = j
+            ll = l - k
+            lonlam(ke) = ll	  ! longitud del estado laminar
+            write (30,300) xfue, yfue, ll, k, l, yden, yfue   ! archivo 30 es "reinyeccion.txt"
+        end if
+    end if
+
+    ! Now we define the "domain" of number of laminar lengths in xa, discretized
+    ! in bins of length 10 iterations "sua".
+    do i = 1,ns+1,sua
+        xa(i) = 0.5d0 + (i-1) * 1.d0   ! establece los intervalos en los que 
+                                       ! pueden estar las distintas longitudes laminares
+    end do
+    
+    ! Loop through the amount of reinjected numbers
+    do j = 1,kt
+        ! Loop through the number of laminar lengths defined as domain
+        do i = 1,ns,sua
+            ! If the current laminar length falls between the domain we stored in vectors
+            ! one for the probability computation and another for the average length.
+            if(lonlam(j) .ge. xa(i)) then  
+    !	      if(lonlam(j) .lt. xa(i+1)) then
+                if(lonlam(j) .lt. xa(i+sua)) then
+                prolam(i) = prolam(i) + 1.d0  ! probabilidad de la longitud del estado laminar
+                longpro(i) = longpro(i) + lonlam(j)
+                end if
+            end if
+        end do
+    end do
+
+    ! Once the accumulation is over, we get the avg values of 
+    ! laminar lengths for every sub-interval
+            
+    do i = 1,ns
+        if(prolam(i) > 0) then
+            longpro(i) = longpro(i)/prolam(i)
+        end if
+        if(prolam(i) .eq. 0) then
+            longpro(i) = 0.d0
+        end if	  
+    end do
+
+    ! The probability of laminar reinjection is computed and the center of 
+    ! the sub intervals is computed too, for the file writing.
+    do i = 1,ns,sua 
+        prolam(i) = prolam(i)/kt ! probabilidad de la longitud del estado laminar
+        ws = (2.d0*i+sua)/2.d0
+        !write (90,204) i, prolam(i) ! archivo 90 es "probabilidad longitudes laminares.txt"
+        write (90,200) ws, prolam(i)/(1.d0*sua) ! archivo 90 es "probabilidad longitudes laminares.txt"
+    end do
+
+    ! Computing of average of reinjected points.
+    do j = 1,kt
+        do i = 1,ns 
+            if(yd(j) .ge. xi(i)) then
+                if(yd(j) .lt. xi(i+1)) then
+                prob(i) = prob(i) + 1.d0
+                val(i) = val(i) + yd(j)  !suma todos los valores de "y" que estan en cada subintervalo
+                !longpro(i) = longpro(i) + lonlam(j)
+                end if
+            end if
+        end do
+    end do
+
+    ! Here we compute the average of the reinjected points and count
+    ! the number of them in every sub-interval
+    do i = 1,ns
+        if(prob(i) > 0.0) then
+            val(i) = val(i)/prob(i)  !promedio aritmetico de los valores de "y" que estan en cada subintervalo
+            !longpro(i) = longpro(i)/prob(i) !promedio aritmetico de los valores de "longitud laminar" en cada subintervalo
+            prob(i) = prob(i)/(1.d0*kt)
+        end if
+  
+        if(prob(i) .eq. 0.0) then
+            val(i) = 0.d0  !promedio de los valores de "y" que estan en cada subintervalo
+            prob(i) = 0.d0
+        end if
+        write (70,200) xi(i), val(i)  ! archivo 70 es "valor medio aritmetico.txt"
+      end do
+  
+    ! Actual normalized probability in interval
+    do i = 1,ns
+        probr(i) = prob(i)*ns/(xmax-xmin)  !probabilidad real para intervalo xmax-xmin
+    end do
+    
+    ! Array for computing RPD
+    funpro(1) = prob(1)
+
+    ! The RPD is the derivative with respect to x of the normalized reinjection
+    ! probability, given the fact that is a density.
+
+    ! On the other hand funpro accumulates the probability, being this
+    ! the cumulate distribution function of the reinjected points up to that
+    ! value of x.
+    do i = 2,ns
+        dprob(i) = (prob(i) - prob(i-1)) / delta  !funcion densidad de probabilidad
+        funpro(i) = funpro(i-1) + prob(i)  !funcion probabilidad en el intervalo (0,i)
+    end do
+
+    dprob(1) = dprob(2)
+
+
+    ! Now we compute the mean laminar length
+    lmedia = 0.d0
+	lmedia1 = 0.d0
+	
+!    mns = 2 + (ns/2)
+
+    mns = 2 
+    ! Iterate through the laminar interval
+	do i = mns-1,ns
+        ! If it is the first step, then it's just the value
+		if(i .eq. mns-1) then
+		  xh = xi(i)
+		end if
+		! For next intervals we have to substract the already
+        ! passed values of lengths in order to have just
+        ! the length of the actual interval.
+		if(i .ne. mns-1) then
+		  xh = xi(i) - xi(mns-1)
+		end if
+		
+!	    lg = (dlog(xint/abs(xh)) - 0.5d0*dlog((aa*xint*xint+epsi)/(aa*xh*xh+epsi))) / epsi  
+        ! We use the classic theorical equation for the laminar length
+	    lg = (dlog(xint/abs(xh)) - 0.5d0*dlog((aa*(xint**(lambda-1.))+epsi)/(aa*(xh**(lambda-1.))+epsi))) / epsi  
+				
+        lmedia = lmedia + prob(i) * lg
+		lmedia_s = lmedia_s + longpro(i)/ns
+
+!       lmedia = lmedia + prob(i) * lonlam(i); !no se puede utilizar porque hay que calcular 
+                                                !lonlam de i, porque lonlam esta definda para 
+												!cada punto de reinjeccion
+		
+		lmedia1 = lmedia1 + lg/(ns+1.d0) 
+
+		write (135,200) xi(i), lmedia	 !funcion longotud media en el intervalo (0,i)
+
+		write (139,200) xi(i), lmedia_s	 !funcion longotud media en el intervalo (0,i) de Sergio
+
+		write (136,200) xi(i), lmedia1	 !funcion longotud media en el intervalo (0,i) con probabilidad uniforme
+		
+	end do
+
+    !CALCULO DE LA LONGITUD LAMINAR MEDIA ESTADISTICA TEORICA PARA PROBABILIDAD = CTE
+
+	vx = (sqrt(epsi))/xint ! Aproximación teórica
+!	lgt = (-0.5d0/epsi)*dlog10(1.d0+vx*vx) + (0.5d0/vx)*(pi-2.d0*datan(vx)+(dlog10(1.d0+vx*vx))/vx) 
+	
+	lgt = (datan(xint*sqrt(aa/epsi)))/(xint*sqrt(aa*epsi)) !ecuacion (3) paper de Kim de 1998
+
+!   lgts es la longitud media deducida por Sergio 
+!	lgts = cte1 * xmax**(1+ae)*((1/epsi)-(aa*(xmax**2.)/(epsi**2.))+(0.5d0*(aa**2.)*(xmax**4.)/(epsi**3.)))/((1.d0+ae)*(3.d0+ae))
+	
+!   lgte es la longitud media deducida por Ezequiel
+ 	lgte = (0.5d0*cte1*pi/(aa*(ae+1))) * ((aa/epsi)**(0.5*(1.d0-ae))) * datan(0.5d0*pi*ae)
 
 
 

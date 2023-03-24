@@ -17,10 +17,10 @@ flag_o02=-march=native
 # Varios
 flag_g01=-fcheck=all
 flag_g02=-fbacktrace
-    	
+
 FFLAGS=${flag_o01} ${flag_o02} ${flag_w01} ${flag_d01} ${flag_d02} \
     ${flag_g01} ${flag_g02}
-    
+
 # ====================================================================
 # Sources
 # ====================================================================
@@ -34,7 +34,7 @@ bin_name_01 = Intermittency_type_III_M_function
 bin_name_02 = Intermittency_type_III_cobweb
 bin_name_03 = Intermittency_type_III_M_prob
 bin_name_04 = Intermittency_type_III_M_prob_reinjection
-
+bin_name_05 = Intermittency_type_III_laminar_length
 
 # object dependencies
 dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o vector_statistics.o
@@ -43,7 +43,7 @@ dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o vector_statistics.o
 # Intermittency_type_III_M_function
 $(bin_name_01).o: $(dependencies_01)
 	$(FC) $(FFLAGS) -o $(bin_name_01).o $(dependencies_01) $(bin_name_01).f90
-	
+
 # Intermittency_type_III_cobweb
 $(bin_name_02).o: $(dependencies_01)
 	$(FC) $(FFLAGS) -o $(bin_name_02).o $(dependencies_01) $(bin_name_02).f90
@@ -56,12 +56,16 @@ $(bin_name_03).o: $(dependencies_01)
 $(bin_name_04).o: $(dependencies_01)
 	$(FC) $(FFLAGS) -o $(bin_name_04).o $(dependencies_01) $(bin_name_04).f90
 
-	
+# Intermittency_type_III_M_prob_reinjection
+$(bin_name_05).o: $(dependencies_01)
+	$(FC) $(FFLAGS) -o $(bin_name_05).o $(dependencies_01) $(bin_name_05).f90
+
+
 # ====================================================================
 # Modules compilation
 # ====================================================================
 # modules path
-mod_path=../../../modulos/
+mod_path=../../../../cursos/modulosfortran/
 # module names
 mod_name_01 = precision
 mod_name_02 = rangens_mod
@@ -85,8 +89,8 @@ $(mod_name_06).o: $(mod_name_01).o
 	$(FC) -c $(mod_path)$(mod_name_06).f90
 $(mod_name_10).o: $(mod_name_01).o $(mod_name_06).o
 	$(FC) -c $(mod_path)$(mod_name_10).f90
-	
-	
+
+
 # ====================================================================
 # Sources
 # ====================================================================
@@ -105,10 +109,14 @@ bin_name_04_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
 ${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
 ${mod_path}${mod_name_10}.f90 ${bin_name_04}.f90
 
+bin_name_05_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${mod_path}${mod_name_10}.f90 ${bin_name_05}.f90
+
 # ====================================================================
 # Executable and run
 # ====================================================================
-# run 
+# run
 run_cmd = run_
 
 # Intermittency type III M(x)
@@ -124,7 +132,7 @@ $(mod_name_04).o $(mod_name_09).o $(mod_name_06).o
 	$(FC) $(FFLAGS) -o $@ $(bin_name_02_src)
 $(run_cmd)$(bin_name_02): $(bin_name_02)
 	@./$(bin_name_02)
-	
+
 # Intermittency type III M(x) prob
 $(bin_name_03): $(bin_name_03).o $(bin_name_03).f90 $(mod_name_01).o \
 $(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
@@ -138,7 +146,13 @@ $(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
 	$(FC) $(FFLAGS) -o $@ $(bin_name_04_src)
 $(run_cmd)$(bin_name_04): $(bin_name_04)
 	@./$(bin_name_04)
-	
+
+# Intermittency type III laminar length probability
+$(bin_name_05): $(bin_name_05).o $(bin_name_05).f90 $(mod_name_01).o \
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
+	$(FC) $(FFLAGS) -o $@ $(bin_name_05_src)
+$(run_cmd)$(bin_name_05): $(bin_name_05)
+	@./$(bin_name_05)
 
 # ====================================================================
 # Plot
@@ -158,10 +172,14 @@ $(plot_cmd)$(bin_name_03):
 $(plot_cmd)$(bin_name_04):
 	@./$(plot_cmd)$(bin_name_04).sh
 
+# Plot Intermittency_type_III_laminar_lengths
+$(plot_cmd)$(bin_name_05):
+	@./$(plot_cmd)$(bin_name_05).sh
+
 # ====================================================================
 # Phony rules
 # ====================================================================
 clean:
-	@rm -f *.o *.mod ${bin_name_01} ${bin_name_02} ${bin_name_03} ${bin_name_04}
-		
+	@rm -f *.o *.mod ${bin_name_01} ${bin_name_02} ${bin_name_03} ${bin_name_04} ${bin_name_05}
+
 
