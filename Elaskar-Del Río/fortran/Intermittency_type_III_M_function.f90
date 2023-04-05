@@ -4,35 +4,41 @@ program Intermittency_type_III_M_function
     use maps
     use matrixalgebra
     use vector_statistics
+    implicit none
 
     integer(sp)                 :: seed
-    integer(dp)                 :: i,j,k,n_bins,n_reinjected
-    real(dp)                    :: xn,xn1,c,x_start,x_end,eps(2),a(2),d(2)
+    integer(dp)                 :: i,j,k,n_bins,n_reinjected,ratio_rein_bins
+    real(dp)                    :: xn,xn1,c,lblr,ublr,eps(2),a(2),d(2)
     integer(dp), allocatable    :: counter(:)
     real(dp), allocatable       :: x_bins(:),M_x(:),M_x_avg(:)
     real(dp), allocatable       :: x_reinjected(:),x_reinjected_sorted(:)
     real(dp), allocatable       :: x_avg(:)
 
     ! Datafile in which the data will be stored
-    open(12,file='Intermittency_type_III_xreinjected_case1.dat',status='replace')
-    open(13,file='Intermittency_type_III_M_case1.dat',status='replace')
-    open(14,file='Intermittency_type_III_M_avg_case1.dat',status='replace')
-    open(15,file='Intermittency_type_III_xreinjected_case2.dat',status='replace')
-    open(16,file='Intermittency_type_III_M_case2.dat',status='replace')
-    open(17,file='Intermittency_type_III_M_avg_case2.dat',status='replace')
+    open(12,file='datafiles/Intermittency_type_III_xreinjected_case1.dat',status='replace')
+    open(13,file='datafiles/Intermittency_type_III_M_case1.dat',status='replace')
+    open(14,file='datafiles/Intermittency_type_III_M_avg_case1.dat',status='replace')
+    open(15,file='datafiles/Intermittency_type_III_xreinjected_case2.dat',status='replace')
+    open(16,file='datafiles/Intermittency_type_III_M_case2.dat',status='replace')
+    open(17,file='datafiles/Intermittency_type_III_M_avg_case2.dat',status='replace')
 
     ! Initialization of Mersenne-Twister generator
     seed = 31122_sp
     call sgrnd(seed)
 
     ! Limits of the laminar interval
-    c = 0.6_dp;x_start = 0._dp; x_end = c
+    ! lblr: lower boundary of laminar region
+    ! ublr: upper boundary of laminar region
+    c = 0.6_dp;lblr = 0._dp; ublr = c
     
     ! Number of bins in which the laminar interval will be divided
-    n_bins = 100_dp
+    n_bins = 200_dp
 
     ! Intended number of reinjected points
     n_reinjected = 15000_dp
+
+    ! Ratio of reinjected points over bins
+    ratio_rein_bins = int(real(n_reinjected, dp) / real(n_bins, dp))
 
     ! Allocation and initialization of different vectors of interest
     allocate(M_x(n_reinjected))
@@ -53,7 +59,7 @@ program Intermittency_type_III_M_function
     ! Loop through both set of parameters
     do i = 1,1
         xn = grnd()
-        ! Loop to obtained the desired amount of reinjection points
+        ! Loop until we obtain the desired amount of reinjection points
         k = 0_dp
         do while (k < n_reinjected)
             xn1 = map_III_a(xn,eps(i),a(i),d(i))
@@ -104,9 +110,9 @@ program Intermittency_type_III_M_function
     enddo
 
 
-    open(18,file='test.dat',status='replace')
-    open(19,file='testavg.dat',status='replace')
-    open(20,file='testdif.dat',status='replace')
+    open(18,file='datafiles/test.dat',status='replace')
+    open(19,file='datafiles/testavg.dat',status='replace')
+    open(20,file='datafiles/testdif.dat',status='replace')
     
     do k = 1,4
         x_reinjected = linspace(0._dp,c,n_reinjected)
@@ -136,7 +142,7 @@ program Intermittency_type_III_M_function
 
         do i = 1,n_bins
             write(20,"(2(E16.6))") (x_avg(i)-minval(x_avg))/(maxval(x_avg)-minval(x_avg))&
-            &,(M_x(i*150)-M_x_avg(i))/M_x(i*150)
+            &,(M_x(i*ratio_rein_bins)-M_x_avg(i))/M_x(i*ratio_rein_bins)
         enddo
 
         M_x_avg = 0._dp;M_x = 0._dp; counter = 0_dp; x_reinjected = 0._dp; x_reinjected_sorted = 0._dp

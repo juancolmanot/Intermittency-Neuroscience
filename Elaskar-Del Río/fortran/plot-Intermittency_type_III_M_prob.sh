@@ -1,9 +1,9 @@
 #!/usr/bin/gnuplot
 
 # kind of output to generate
-set terminal qt size 1200,800 font 'arial,21' persist
+set terminal pdfcairo size 8,6 font 'arial,21'
 
-set terminal qt enhanced
+set output "plots/plot_Intermittency_type_III_M_prob.pdf"
 
 set multiplot layout 2,2 rowsfirst
 

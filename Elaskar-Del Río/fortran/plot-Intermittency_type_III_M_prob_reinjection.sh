@@ -1,13 +1,9 @@
 #!/usr/bin/gnuplot
 
 # kind of output to generate
-#set terminal qt size 1200,800 font 'arial,21'
- 
-#set terminal qt enhanced
-
 set terminal pdfcairo enhanced color notransparent
 
-set output 'plots/Intermittency_type_III_M_reinj_prob.pdf'
+set output 'plots/plot_Intermittency_type_III_M_prob_reinjection.pdf'
 
 set size 1,1
 
