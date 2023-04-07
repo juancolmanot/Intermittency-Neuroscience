@@ -1,42 +1,70 @@
 #!/usr/bin/gnuplot
 
 # kind of output to generate
-set terminal qt size 600,600 font 'arial,21' persist
+set terminal pdfcairo size 8,6 font 'arial,21'
 
-set terminal qt enhanced
-
-set size 1,1
+set output "plots/plot_Intermittency_type_III_M.pdf"
 
 set grid lw 2
-set title 'M(x) function'
-set ylabel 'x_{reinjected}'
-set xlabel 'M(x)'
+
+set multiplot layout 2,2 rowsfirst
+
+# Plot 1
+set ylabel 'M(x)'
+set xlabel 'x'
 
 set key font ',12'
 set xtics font ',11'
 set ytics font ',11'
 
+set key top left
+
+set autoscale
+
+p 'datafiles/Intermittency_type_III_M_sum_case1.dat' u 1:2 t 'Ordered-Sum' w l lw 1.5 lc rgb 'red', \
+  'datafiles/Intermittency_type_III_M_prob_case1.dat' u 1:3 t 'Definition' w l lw 1.5 lc rgb 'blue'
+
+# Plot 2
+set ylabel '{/Symbol F}{(x)} - case 1'
+set xlabel 'x'
+
+set key font ',12'
+set xtics font ',11'
+set ytics font ',11'
 
 set key top left
 
 set autoscale
 
-# M1(x) = m1*x + ai1*(1 - m1)
-# M2(x) = m2*x + ai2*(1 - m2)
+p 'datafiles/Intermittency_type_III_M_prob_case1.dat' u 1:2 notitle w l lw 1.5 lc rgb 'red'
 
-#set xrange[0.0:0.65]
-#set xrange[0.0:0.3]
+# Plot 3
+set ylabel 'M(x)'
+set xlabel 'x'
 
-# fit M1(x) 'Intermittency_type_III_M_avg_case1.dat' u 1:2 via ai1,m1
-# fit M2(x) 'Intermittency_type_III_M_avg_case2.dat' u 1:2 via ai2,m2
+set key font ',12'
+set xtics font ',11'
+set ytics font ',11'
 
-p 'Intermittency_type_III_M_case1.dat' u ($0/10):1 w l lw 1.5 lc rgb 'red', \
-  'Intermittency_type_III_M_avg_case1.dat' u 0:1 w p pt 5 ps 0.25 lc rgb 'blue', \
+set key top left
 
-# p 'Intermittency_type_III_M_case1.dat' u 1:2 title 'tot 1' w l lw 1.5 lc rgb 'black', \
-#   'Intermittency_type_III_M_case2.dat' u 1:2 title 'tot 2' w l lw 1.5 lc rgb 'black', \
-#   'Intermittency_type_III_M_avg_case1.dat' u 1:2 title 'avg 1' w l lw 1.5 lc rgb 'black', \
-#   'Intermittency_type_III_M_avg_case2.dat' u 1:2 title 'avg 2' w l lw 1.5 lc rgb 'black'
-#   [x=0.0:0.65] M1(x) t 'fit 1' w p pt 5 ps 0.5 lc rgb 'red', \
-#   [x=0:0.65] M2(x) t 'fit 2' w p pt 5 ps 0.5 lc rgb 'blue'
-  
+set autoscale
+
+p 'datafiles/Intermittency_type_III_M_sum_case2.dat' u 1:2 t 'Ordered-Sum' w l lw 1.5 lc rgb 'red', \
+  'datafiles/Intermittency_type_III_M_prob_case2.dat' u 1:3 t 'Definition' w l lw 1.5 lc rgb 'blue'
+
+# Plot 4
+set ylabel '{/Symbol F}(x) - case 2'
+set xlabel 'x'
+
+set key font ',12'
+set xtics font ',11'
+set ytics font ',11'
+
+set key top left
+
+set autoscale
+
+p 'datafiles/Intermittency_type_III_M_prob_case2.dat' u 1:2 notitle w l lw 1.5 lc rgb 'red'
+
+unset multiplot

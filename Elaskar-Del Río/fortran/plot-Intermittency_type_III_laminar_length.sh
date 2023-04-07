@@ -7,7 +7,7 @@
 
 set terminal pdfcairo enhanced color notransparent
 
-set output 'plots/Intermittency_type_III_laminar_lenghts.pdf'
+set output 'plots/plot_Intermittency_type_III_laminar_length.pdf'
 
 #set size 1,1
 

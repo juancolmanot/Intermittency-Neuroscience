@@ -13,7 +13,7 @@ flag_d01=-ffpe-trap=zero -ffpe-trap=overflow -ffpe-trap=underflow
 flag_d02=-g -fbacktrace -fbounds-check
 # Optimization flags
 flag_o01=-O3 -ftree-vectorize -ftree-loop-vectorize
-flag_o02=-march=native
+flag_o02=-march=native -Ofast -ffast-math
 # Varios
 flag_g01=-fcheck=all
 flag_g02=-fbacktrace
@@ -34,10 +34,13 @@ bin_name_01 = Intermittency_type_III_M_function
 bin_name_02 = Intermittency_type_III_cobweb
 bin_name_03 = Intermittency_type_III_M_prob
 bin_name_04 = Intermittency_type_III_M_prob_reinjection
-
+bin_name_05 = Intermittency_type_III_M
+bin_name_06 = Intermittency_type_III_laminar_length
+bin_name_07 = Intermittency_type_III_M_absolute_values
 
 # object dependencies
 dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o vector_statistics.o
+dependencies_02 = precision.o mtmod.o maps.o matrixalgebra.o
 
 # binary rules
 # Intermittency_type_III_M_function
@@ -56,12 +59,23 @@ $(bin_name_03).o: $(dependencies_01)
 $(bin_name_04).o: $(dependencies_01)
 	$(FC) $(FFLAGS) -o $(bin_name_04).o $(dependencies_01) $(bin_name_04).f90
 
-	
+# Intermittency_type_III_M_function
+$(bin_name_05).o: $(dependencies_02)
+	$(FC) $(FFLAGS) -o $(bin_name_05).o $(dependencies_02) $(bin_name_05).f90
+
+# Intermittency_type_III_laminar_length
+$(bin_name_06).o: $(dependencies_01)
+	$(FC) $(FFLAGS) -o $(bin_name_06).o $(dependencies_01) $(bin_name_06).f90
+
+# Intermittency_type_III_M_function
+$(bin_name_07).o: $(dependencies_02)
+	$(FC) $(FFLAGS) -o $(bin_name_07).o $(dependencies_02) $(bin_name_07).f90
+
 # ====================================================================
 # Modules compilation
 # ====================================================================
 # modules path
-mod_path=../../../modulos/
+mod_path=../../../../cursos/modulosfortran/
 # module names
 mod_name_01 = precision
 mod_name_02 = rangens_mod
@@ -105,6 +119,18 @@ bin_name_04_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
 ${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
 ${mod_path}${mod_name_10}.f90 ${bin_name_04}.f90
 
+bin_name_05_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${bin_name_05}.f90
+
+bin_name_06_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${mod_path}${mod_name_10}.f90 ${bin_name_06}.f90
+
+bin_name_07_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${bin_name_07}.f90
+
 # ====================================================================
 # Executable and run
 # ====================================================================
@@ -138,7 +164,27 @@ $(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
 	$(FC) $(FFLAGS) -o $@ $(bin_name_04_src)
 $(run_cmd)$(bin_name_04): $(bin_name_04)
 	@./$(bin_name_04)
+
+# Intermittency type III M(x) both correct methods
+$(bin_name_05): $(bin_name_05).o $(bin_name_05).f90 $(mod_name_01).o \
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o
+	$(FC) $(FFLAGS) -o $@ $(bin_name_05_src)
+$(run_cmd)$(bin_name_05): $(bin_name_05)
+	@./$(bin_name_05)
 	
+# Intermittency type III laminar length
+$(bin_name_06): $(bin_name_06).o $(bin_name_06).f90 $(mod_name_01).o \
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_10).o
+	$(FC) $(FFLAGS) -o $@ $(bin_name_06_src)
+$(run_cmd)$(bin_name_06): $(bin_name_06)
+	@./$(bin_name_06)
+
+# Intermittency type III M(x) absolute values
+$(bin_name_07): $(bin_name_07).o $(bin_name_07).f90 $(mod_name_01).o \
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o
+	$(FC) $(FFLAGS) -o $@ $(bin_name_07_src)
+$(run_cmd)$(bin_name_07): $(bin_name_07)
+	@./$(bin_name_07)
 
 # ====================================================================
 # Plot
@@ -158,10 +204,23 @@ $(plot_cmd)$(bin_name_03):
 $(plot_cmd)$(bin_name_04):
 	@./$(plot_cmd)$(bin_name_04).sh
 
+# Plot Intermittency_type_III_M
+$(plot_cmd)$(bin_name_05):
+	@./$(plot_cmd)$(bin_name_05).sh
+
+# Plot Intermittency_type_III_laminar_length
+$(plot_cmd)$(bin_name_06):
+	@./$(plot_cmd)$(bin_name_06).sh
+
+# Plot Intermittency_type_III_M_absolute_values
+$(plot_cmd)$(bin_name_07):
+	@./$(plot_cmd)$(bin_name_07).sh
+
 # ====================================================================
 # Phony rules
 # ====================================================================
 clean:
-	@rm -f *.o *.mod ${bin_name_01} ${bin_name_02} ${bin_name_03} ${bin_name_04}
+	@rm -f *.o *.mod ${bin_name_01} ${bin_name_02} ${bin_name_03} ${bin_name_04} \
+	${bin_name_05} ${bin_name_06} ${bin_name_07}
 		
 
