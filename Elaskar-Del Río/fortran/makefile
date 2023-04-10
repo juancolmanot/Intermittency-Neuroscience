@@ -37,10 +37,12 @@ bin_name_04 = Intermittency_type_III_M_prob_reinjection
 bin_name_05 = Intermittency_type_III_M
 bin_name_06 = Intermittency_type_III_laminar_length
 bin_name_07 = Intermittency_type_III_M_absolute_values
+bin_name_08 = Intermittency_type_III_laminar_test
 
 # object dependencies
 dependencies_01 = precision.o mtmod.o maps.o matrixalgebra.o vector_statistics.o
 dependencies_02 = precision.o mtmod.o maps.o matrixalgebra.o
+dependencies_03 = precision.o mtmod.o maps.o matrixalgebra.o intermittency_type_III_DR_E_D_2011.o
 
 # binary rules
 # Intermittency_type_III_M_function
@@ -71,6 +73,10 @@ $(bin_name_06).o: $(dependencies_01)
 $(bin_name_07).o: $(dependencies_02)
 	$(FC) $(FFLAGS) -o $(bin_name_07).o $(dependencies_02) $(bin_name_07).f90
 
+# Intermittency_type_III_laminar_test
+$(bin_name_08).o: $(dependencies_03)
+	$(FC) $(FFLAGS) -o $(bin_name_08).o $(dependencies_03) $(bin_name_08).f90
+
 # ====================================================================
 # Modules compilation
 # ====================================================================
@@ -87,6 +93,7 @@ mod_name_07 = functions
 mod_name_08 = neuronmodels
 mod_name_09 = maps
 mod_name_10 = vector_statistics
+mod_name_11 = intermittency_type_III_DR_E_D_2011
 
 # module recipes
 $(mod_name_01).o:
@@ -99,7 +106,8 @@ $(mod_name_06).o: $(mod_name_01).o
 	$(FC) -c $(mod_path)$(mod_name_06).f90
 $(mod_name_10).o: $(mod_name_01).o $(mod_name_06).o
 	$(FC) -c $(mod_path)$(mod_name_10).f90
-	
+$(mod_name_11).o: $(mod_name_01).o
+	$(FC) -c $(mod_path)$(mod_name_11).f90
 	
 # ====================================================================
 # Sources
@@ -130,6 +138,10 @@ ${mod_path}${mod_name_10}.f90 ${bin_name_06}.f90
 bin_name_07_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
 ${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
 ${bin_name_07}.f90
+
+bin_name_08_src = ${mod_path}${mod_name_01}.f90 ${mod_path}${mod_name_04}.f90 \
+${mod_path}${mod_name_09}.f90 ${mod_path}${mod_name_06}.f90 \
+${mod_path}${mod_name_11}.f90 ${bin_name_08}.f90
 
 # ====================================================================
 # Executable and run
@@ -186,6 +198,13 @@ $(mod_name_04).o $(mod_name_09).o $(mod_name_06).o
 $(run_cmd)$(bin_name_07): $(bin_name_07)
 	@./$(bin_name_07)
 
+# Intermittency type III length test
+$(bin_name_08): $(bin_name_08).o $(bin_name_08).f90 $(mod_name_01).o \
+$(mod_name_04).o $(mod_name_09).o $(mod_name_06).o $(mod_name_11).o
+	$(FC) $(FFLAGS) -o $@ $(bin_name_08_src)
+$(run_cmd)$(bin_name_08): $(bin_name_08)
+	@./$(bin_name_08)
+
 # ====================================================================
 # Plot
 # ====================================================================
@@ -216,11 +235,15 @@ $(plot_cmd)$(bin_name_06):
 $(plot_cmd)$(bin_name_07):
 	@./$(plot_cmd)$(bin_name_07).sh
 
+# Plot Intermittency_type_III_M_absolute_values
+$(plot_cmd)$(bin_name_08):
+	@./$(plot_cmd)$(bin_name_08).sh	
+
 # ====================================================================
 # Phony rules
 # ====================================================================
 clean:
 	@rm -f *.o *.mod ${bin_name_01} ${bin_name_02} ${bin_name_03} ${bin_name_04} \
-	${bin_name_05} ${bin_name_06} ${bin_name_07}
+	${bin_name_05} ${bin_name_06} ${bin_name_07} ${bin_name_08}
 		
 
