@@ -9,7 +9,7 @@ program Intermittency_type_III_laminar_test
     integer(sp)             :: seed
     integer(dp)             :: i,j,k
     integer(dp)             :: n_bins,n_iterations,n_reinjected,n_lengths
-    real(dp)                :: xi,l,c,a,b,eps,alfa,prob_l,max_length,xn,xn1
+    real(dp)                :: xi,c,a,b,eps,alfa,max_length,xn,xn1
     real(dp)                :: lblr,ublr,lengths_ratio,l_media1,l_media2,xh,lg
     real(dp), allocatable   :: x_reinjected(:),laminar_length(:)
     real(dp), allocatable   :: laminar_theoric(:),l_bins(:)
@@ -25,18 +25,18 @@ program Intermittency_type_III_laminar_test
     seed = 31123_sp
     call sgrnd(seed)
     
-    a = 1.035_dp; b = 1.05_dp; eps = 0.001_dp
+    a = 1._dp; b = 1.1_dp; eps = 0.01_dp
     c = 0.6_dp
     alfa = 0.5_dp
-    xi = 0._dp
+    xi = 0.08_dp
 
     lblr = 0._dp; ublr = c
 
-    n_reinjected = 55000_dp
+    n_reinjected = 100000_dp
     n_iterations = 0_dp
     n_bins = 200_dp
-    n_lengths = 50_dp
-    max_length = 150._dp
+    n_lengths = 40_dp
+    max_length = 40._dp
     lengths_ratio = max_length / real(n_lengths, dp)
 
     allocate(laminar_theoric(n_reinjected),l_bins(n_lengths+1))
