@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 /* Function that evaluates the map given the (x, y) values */
 
@@ -19,12 +20,12 @@ int main() {
     unsigned int n = 9;
 
     /* Parameters of the computation */
-    unsigned int n_alfa = 10; // Number of alfa coefficients to compute
-    unsigned int n_iterations = 8000; // Number of iterations per alfa.
+    unsigned int n_alfa = 1000; // Number of alfa coefficients to compute
+    unsigned int n_iterations = 10000; // Number of iterations per alfa.
     unsigned int transient = 5000; // predetermined transient period
 
     double p_alfa, p_beta; // Declare both parameters
-    const double min_alfa = 0.8; // Minimum value of alfa to be computed
+    const double min_alfa = 0.6; // Minimum value of alfa to be computed
     const double max_alfa = 0.85; // Maximum value of alfa to be computed
     const double dalfa = (max_alfa - min_alfa) / (float)n_alfa; // Alfa step between to consecutive values
     
@@ -43,14 +44,26 @@ int main() {
     p_alfa = min_alfa;
     p_beta = 0.5;
 
+    /* Define control variable for checkign divergence */
+    unsigned int m = 0;
+
     /* Loop through the alfas */
     for (unsigned int i = 0; i < n_alfa; i++) {
         /* Initialize generator */
         srand(seed);
+        // printf("%d\n", m);
+        /* Define the initial state depending on alpha */
+        if (p_alfa < 0.72) {
+            /* Initialize the initial random state bewteen 0 and 1 */
+            xn[0] = (double)rand() / (double)RAND_MAX;
+            xn[1] = (double)rand() / (double)RAND_MAX;
+        }
+        else if (p_alfa >= 0.72) {
+            /* Force initial state to stable basin of atraction */
+            xn[0] = 0.5; //(double)rand() / (double)RAND_MAX;
+            xn[1] = 0.5; //(double)rand() / (double)RAND_MAX;
+        }
         
-        /* Initialize the initial random state bewteen 0 and 1 */
-        xn[0] = (double)rand() / (double)RAND_MAX;
-        xn[1] = (double)rand() / (double)RAND_MAX;
         
         /* Set xn1 to zero */
         xn1[0] = xn1[1] = 0.f;
@@ -58,7 +71,7 @@ int main() {
         /* Evolve the system in time */
         for (unsigned int j = 0; j < n_iterations; j++) {
             mapa(xn1, xn, p_alfa, p_beta); // Compute the map
-            
+
             /* Write to file if transient is passed*/
             if (j > transient) {
                 fprintf(fp, "%.4E %.4E %.4E\n", p_alfa, xn[0], xn[1]);
