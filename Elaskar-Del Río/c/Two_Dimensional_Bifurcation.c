@@ -30,8 +30,8 @@ int main() {
     const double dalfa = (max_alfa - min_alfa) / (float)n_alfa; // Alfa step between to consecutive values
     
     /* Allocate the arrays for the states of the system */
-    double* xn = malloc(2 * sizeof(float));
-    double* xn1 = malloc(2 * sizeof(float));
+    double* xn = malloc(2 * sizeof(double));
+    double* xn1 = malloc(2 * sizeof(double));
 
     /* Initialize the generator for random initial conditions */
     unsigned int seed = 88492;
