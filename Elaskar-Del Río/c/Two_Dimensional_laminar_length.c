@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "../../../modulosc/linear_algebra.h"
 
 /* Declare function that computes the map */
 
