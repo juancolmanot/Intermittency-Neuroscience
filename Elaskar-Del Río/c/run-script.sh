@@ -13,16 +13,16 @@ help_panel(){
 exec_script(){
     make clean > /dev/null
     echo "[+] Make command info"
-    n_headers = $(grep '.h"'  Two_Dimensional_laminar_length.c | awk '{print $2}' | cut -d '/' -f 5 | cut -d '.' -f 1 | wc -l)
+    n_headers=$(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 5 | cut -d '.' -f 1 | wc -l)
     if [ n_headers == 0 ]; then
         make MAIN=$1
     else
         headers=""
-        for header in $(grep '.h"'  Two_Dimensional_laminar_length.c | awk '{print $2}' | cut -d '/' -f 5); do
-            headers*="$header "    
+        for header in $(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 5 | cut -d '.' -f 1); do
+            headers+="$header "
         done
-        make MAIN=$1 HEADERS=$headers
-    
+        make MAIN=$1 HEADERS="$headers"
+    fi
     ./$1
     make clean > /dev/null
     ./plot-$1.sh

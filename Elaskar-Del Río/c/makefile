@@ -27,12 +27,16 @@ CFLAGS=${flag_o01} ${flag_o02} ${flag_w01} ${flag_d01}
 
 MAIN=
 HEADERS=
-HEADERS_O:=$(addprefix $(MPATH),$(HEADERS))
-HEADERS_O=$(addsuffix .o,$(HEADERS))
-HEADERS_H:=$(addprefix $(MPATH),$(HEADERS_O))
-HEADERS_H=$(addsuffix .h,$(HEADERS_H))
+comma:=,
+HEADERS_LIST:=$(subst  ,$(comma),$(HEADERS))
+HEADERS_LIST:=$(subst $(comma), ,$(HEADERS))
+HEADERS_O:=$(addprefix $(MPATH),$(HEADERS_LIST))
+HEADERS_O:=$(addsuffix .o,$(HEADERS_O))
+HEADERS_H:=$(addprefix $(MPATH),$(HEADERS_LIST))
+HEADERS_H:=$(addsuffix .h,$(HEADERS_H))
 #SOURCES=$(shell echo *.c)
 #COMMON_OBJECTS=
+
 
 # ====================================================================
 # Generate executable
@@ -41,17 +45,29 @@ $(MAIN): $(MAIN).o $(HEADERS_O)
 	@$(CC) $(CPATH) $^ -o $@
 
 # ====================================================================
-# Compile output files
+# Compile output main file
 # ====================================================================
 $(MAIN).o: $(MAIN).c $(HEADERS_H)
-	@$(CC) $(CFLAGS) $(OPTFLAGS) -c - o $@ $< 
-
+	@$(CC) $(CFLAGS) $(HPATH) $(OPTFLAGS) -c -o $@ $<
 
 # ====================================================================
+# Compile output module files
+# ====================================================================
+$(MPATH)%.o: $(MPATH)%.c $(MPATH)%.h
+	@$(CC) $(CFLAGS) $(HPATH) $(OPTFLAGS) -c -o $@ $<
+
+# $(foreach HEADER,$(HEADERS_LIST),\
+# 	H_C=$(addsuffix .c, $(addprefix $(MPATH),$(HEADER))) \
+# 	H_H=$(addsuffix .o, $(addprefix $(MPATH),$(HEADER))) \
+# 	$(HEADER).o: $(H_C) $(H_H) \
+# 		@$(CC) $(CFLAGS) $(HPATH) $(OPTFLAGS) -c -o $@ $< \
+# )
+# ====================================================================
 # Clean
-# ====================================================================	
+# ====================================================================
 
 clean:
 	@rm -f ${MAIN} *.o
+	@rm -f ${MPATH}*.o
 
 .PHONY: clean all
