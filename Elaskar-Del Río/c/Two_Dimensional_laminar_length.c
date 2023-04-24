@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "../../../modulosc/linear_algebra.h"
-#include "../../../modulosc/intermittency.h"
+#include "../../../../cursos/modulosc/linear_algebra.h"
+#include "../../../../cursos/modulosc/intermittency.h"
 
 
 /* Declare function that computes the map */
@@ -15,9 +15,9 @@ static void mapa(double* x1, double* x, double alfa, double beta) {
 
 int main() {
 
-    printf("%d", 2);
     /* Open file to write data */
-    FILE *fp = fopen("datafiles/Two_Dimensional_Evolution.dat", "w");
+    FILE *fp1 = fopen("datafiles/Two_Dimensional_laminar_length_l_avg.dat", "w");
+    FILE *fp2 = fopen("datafiles/Two_Dimensional_laminar_length_x_y.dat", "w");
 
     /* Hyper-parameters and variables for script */
     unsigned int j, k, m;
@@ -63,24 +63,29 @@ int main() {
     j = k = m = 0;
 
     lbr = 0;
-    ubr = 0.05;
+    ubr = 0.7;
 
     x_bins = linspace(lbr, ubr, n_bins_x + 1);
-    x_bins = linspace((double)1, (double)n_bins_l, n_bins_l + 1);
+    l_bins = linspace((double)1, (double)n_bins_l, n_bins_l + 1);
 
 
     for (unsigned int i = 0; i < n_alpha; i++) {
+        printf("%f\n", p_alpha);
         while (k < n_reinjected) {
             j++;
             mapa(xn1, xn, p_alpha, p_beta);
+            fprintf(fp2, "%f   %f\n", sqrt(xn[0] * xn[0] + xn[1] * xn[1]), sqrt(xn1[0] * xn1[0] + xn1[1] * xn1[1]));
             if (reinjection(xn1[0], xn[0], ubr, lbr)) {
                 x_reinjected[k] = xn1[0];
                 k++;
                 m = j;
+                printf("%d\n", k);
             }
             else if (ejection(xn1[0], xn[0], ubr, lbr)) {
                 laminar_lengths[k] = j - m;
             }
+            xn[0] = xn1[0];
+            xn[1] = xn1[1];
         }
 
         for (unsigned int i = 0; i <= n_reinjected; i++) {
@@ -113,13 +118,14 @@ int main() {
         for (unsigned int i = 0; i < n_bins_l; i++) {
             lavg += avg_l[i]*prob_l[i];
         }
-
-        fprintf(fp, "%f %f\n", p_alpha, lavg);
+        lavg = log(lavg);
+        fprintf(fp1, "%f %f\n", p_alpha, lavg);
         p_alpha += dalpha;
     }
     
 
-    fclose(fp);
+    fclose(fp1);
+    fclose(fp2);
     printf("Finished\n");
     return 0;
 }

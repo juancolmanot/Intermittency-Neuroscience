@@ -13,12 +13,12 @@ help_panel(){
 exec_script(){
     make clean > /dev/null
     echo "[+] Make command info"
-    n_headers=$(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 5 | cut -d '.' -f 1 | wc -l)
+    n_headers=$(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 7 | cut -d '.' -f 1 | wc -l)
     if [ n_headers == 0 ]; then
         make MAIN=$1
     else
         headers=""
-        for header in $(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 5 | cut -d '.' -f 1); do
+        for header in $(grep '.h"' $1.c | awk '{print $2}' | cut -d '/' -f 7 | cut -d '.' -f 1); do
             headers+="$header "
         done
         make MAIN=$1 HEADERS="$headers"

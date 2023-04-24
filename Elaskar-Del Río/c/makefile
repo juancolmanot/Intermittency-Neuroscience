@@ -3,9 +3,10 @@
 # ====================================================================
 
 CC=gcc
-MPATH=../../../modulosc/
+MPATH=../../../../cursos/modulosc/
 HPATH= -I${MPATH}
 CPATH= -L${MPATH}
+LDLIBS= -lm
 OPTFLAGS=-O3
 
 # ====================================================================
@@ -42,7 +43,7 @@ HEADERS_H:=$(addsuffix .h,$(HEADERS_H))
 # Generate executable
 # ====================================================================
 $(MAIN): $(MAIN).o $(HEADERS_O)
-	@$(CC) $(CPATH) $^ -o $@
+	@$(CC) $(CPATH) $^ -o $@ $(LDLIBS)
 
 # ====================================================================
 # Compile output main file
