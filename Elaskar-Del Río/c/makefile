@@ -3,7 +3,7 @@
 # ====================================================================
 
 CC=gcc
-MPATH=../../../../cursos/modulosc/
+MPATH=../../../modulosc/
 HPATH= -I${MPATH}
 CPATH= -L${MPATH}
 LDLIBS= -lm

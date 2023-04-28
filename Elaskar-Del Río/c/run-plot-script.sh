@@ -25,6 +25,10 @@ exec_script(){
     fi
     ./$1
     make clean > /dev/null
+    ./plot-$1.sh
+    for file in $(ls plots/*"$1"* | awk '{print $1}'); do
+        xdg-open "$file"
+    done
     rm $1
 }
 
