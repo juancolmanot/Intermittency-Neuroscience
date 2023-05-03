@@ -32,41 +32,37 @@ def mapa_n(xn, n, *args):
 
     return xn1
 
-with open("datafiles/Two_Dimensional_Evolution.dat", "w") as file:
 
-    n_digits = 5
-    width = 12
+x_n1 = [0, 0]
+x_n = [0.7, 0.9]
 
-    x_n1 = [0, 0]
-    x_n = x_n = [0.7, 0.9]
+N = 1000
 
-    N = 100000
+n = np.linspace(0, N, N + 1)
+x = np.zeros((2, N + 1))
+x1 = np.zeros((2, N + 1))
 
-    # n = np.linspace(0,N,N+1)
-    # x = np.zeros((2, N + 1))
-    # x1 = np.zeros((2, N + 1))
+a = 0.674103
+b = 0.5
 
-    a = 0.674103
-    b = 0.5
+n_map = 14
 
-    n_map = 14
-
-    for i in range(N + 1):
-        x_n1 = mapa_n(x_n, n_map, a, b)
-        # x[:, i] = x_n
-        # x1[:, i] = x_n1
-        file.write('{:03d} {:.4E} {:.4E}\n'.format(i, x_n[0], x_n[1]))
-        x_n = x_n1
-        
-    # fig, ax = plt.subplots(2,2)
-    # ax[0, 0].plot(n, x[0, :], linestyle='None', marker='.', markersize=0.1, color='black')
-    # plt.grid()
-    # ax[0, 1].plot(n, x1[0, :], linestyle='None', marker='.', markersize=0.1, color='black')
-    # plt.grid()
-    # ax[1, 0].plot(n, x[1, :], linestyle='None', marker='.', markersize=0.1, color='black')
-    # plt.grid()
-    # ax[1, 1].plot(n, x1[1, :], linestyle='None', marker='.', markersize=0.1, color='black')
-    # plt.grid()
+for i in range(N + 1):
+    x_n1 = mapa_n(x_n, n_map, a, b)
+    x[:, i] = x_n
+    x1[:, i] = x_n1
+    x_n = x_n1
+    
+fig, ax = plt.subplots(2,2)
+plt.ylim(0.7, 1)
+ax[0, 0].plot(n, x[0, :], linestyle='None', marker='.', markersize=0.5, color='black')
+plt.grid()
+ax[0, 1].plot(n, x1[0, :], linestyle='None', marker='.', markersize=0.5, color='black')
+plt.grid()
+ax[1, 0].plot(n, x[1, :], linestyle='None', marker='.', markersize=0.5, color='black')
+plt.grid()
+ax[1, 1].plot(n, x1[1, :], linestyle='None', marker='.', markersize=0.5, color='black')
+plt.grid()
 
 
-    # plt.show()
+plt.show()
