@@ -1,66 +1,58 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation
+import plot_functions as pf
+import maps
+from PIL import Image
 
-def F(x, a, eps):
+N = 20
+alpha_c = 0.77826511 # 0.77826511 # 0.674103 # 0.674149344
+# alpha_min =  alpha_c - np.exp(-22)
+# alpha_max =  alpha_c - np.exp(-19)
 
-    return a * x**2 + x + eps
+alpha = np.linspace(-24, -19, N)
 
-def mod_c(a, b):
+n_map = 14
+b = 0.3 #0.3
+n_i = 2000
 
-    a1 = a[0]
-    a2 = a[1]
-    b1 = b[0]
-    b2 = b[1]
+n = np.linspace(0, n_i, n_i + 1)
+x = np.zeros((2, n_i + 1))
+x1 = np.zeros((2, n_i + 1))
 
-    return np.sqrt((b1 - a2)**2 + (b2 - a2)**2)
-
-def c(a, b):
-    
-    a1 = a[0]
-    a2 = a[1]
-    b1 = b[0]
-    b2 = b[1]
-
-    return [b1 - a1, b2 - a2]
-
-def fixed_point(a, eps):
-
-    xf = np.sqrt(eps / a)
-
-    return [xf, xf]
-
-def tan_point(eps):
-
-    return [0, eps]
-
-N = 200
-a = 2
-eps = np.linspace(0, 2, N)
-
-fig, ax = plt.subplots(1,1)
-
-x = np.linspace(-1, 1, 100)
+fig, ax = plt.subplots(2,1)
+ax[0] = fig.add_subplot(211, projection='3d')
 
 def update(frame):
+    
+    a = alpha[frame]
+    a_i = alpha_c - np.exp(a)
 
-    x1 = list(map(lambda x: F(x, a, eps[frame]), x))
+    x[:, :] = 0
+    x1[:, :] = 0
 
-    fp = fixed_point(a, eps[frame])
-    tp = tan_point(eps[frame])
-    cv = c(tp, fp)
+    x_n1 = [0, 0]
+    x_n = [0.7, 0.9]
+
+    for i in range(n_i + 1):
+        x_n1 = maps.mapa_n(x_n, n_map, a_i, b)
+        x[:, i] = x_n
+        x1[:, i] = x_n1
+        x_n = x_n1
 
     ax.clear()
     ax.grid()
-    ax.plot(x, x1, color='blue', label=f'eps = {round(eps[frame], 2)}')
-    ax.plot(x, x, color='black')
-    ax.plot(0, 0, 'ro')
-    ax.plot(tp[0], tp[1], 'ro', label=f'|c| = {round(eps[frame], 2)}')
-    ax.arrow(0, 0, tp[0], tp[1], head_width=0.05, head_length=0.1, fc='k', ec='k')
-    ax.set_xlabel('x')
-    ax.set_ylabel('F(x)')
-    ax.legend()
+    ax[0].scatter(n[10::], x[0, 10::], x1[0, 10::], s=0.2, label=f'a = {round(a, 2)}', color='black')
+    ax[0].legend()
+    ax[1].scatter(x[0, 10::], x1[0, 10::], s=0.2, color='black')
+    ax[0].set_title('Limit cycle from n+14 map\n alpha crítico = 0.77826511 - beta = 0.3')
+    ax[0].set_xlabel('x', fontsize=16, labelpad=20)
+    ax[0].set_ylabel('y', fontsize=16, labelpad=20)
 
 ani = FuncAnimation(fig, update, frames=N, blit=False)
+ani.save('x-y_3.gif', writer='pillow')
 
+   
 plt.show()
+
