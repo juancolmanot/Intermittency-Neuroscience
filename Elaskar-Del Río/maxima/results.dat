@@ -1,4 +1,181 @@
-   0.68    0.68
-   0.60   -0.16
-  -0.16    0.60
-   0.00    0.00
+
+Maxima 5.45.1 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.12
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("var_transformation.mac")
+
+read and interpret /mnt/d/juan/doctorado/tesis/intermittency-neuroscience/Elaskar-Del Río/maxima/var_transformation.mac
+(%i2) declare([x1,y1,x,y,u,v,u1,v1],noun)
+(%i3) declare([a,b,A,B,C,D],constant)
+(%i4) Fxy:x1 = 4*a*x*(1-x)+b*y*(1-x)
+(%i5) Gxy:y1 = 4*a*y*(1-y)+b*x*(1-y)
+(%i6) tu:u = A*x+B*y
+(%i7) tv:v = C*x+D*y
+(%i8) tu1:u1 = A*x1+B*y1
+(%i9) tv1:v1 = C*x1+D*y1
+(%i10) [x_sol,y_sol]:solve([tu,tv],[x,y])[1]
+(%i11) [x_sol1,y_sol1]:solve([tu1,tv1],[x1,y1])[1]
+(%i12) Fxy:subst(x_sol,x,Fxy)
+(%i13) Fxy:subst(y_sol,y,Fxy)
+(%i14) Fxy:subst(rhs(x_sol1),x1,Fxy)
+(%i15) Fxy:subst(rhs(y_sol1),y1,Fxy)
+(%i16) Fxy:lhs(Fxy) = rhs(rhs(rhs(Fxy)))
+(%i17) Gxy:subst(x_sol,x,Gxy)
+(%i18) Gxy:subst(y_sol,y,Gxy)
+(%i19) Gxy:subst(rhs(x_sol1),x1,Gxy)
+(%i20) Gxy:subst(rhs(y_sol1),y1,Gxy)
+(%i21) Gxy:lhs(Gxy) = rhs(rhs(rhs(Gxy)))
+(%i22) Fxy:ratsimp(Fxy)
+(%i23) Gxy:ratsimp(Gxy)
+(%i24) u1_F:solve(Fxy,u1)[1]
+(%i25) v1_F:solve(Fxy,v1)[1]
+(%i26) u1_G:solve(Gxy,u1)[1]
+(%i27) v1_G:solve(Gxy,v1)[1]
+(%i28) Uxy:rhs(v1_F) = rhs(v1_G)
+(%i29) Vxy:rhs(u1_F) = rhs(u1_G)
+(%i30) Uxy:solve(Uxy,u1)[1]
+(%i31) Vxy:solve(Vxy,v1)[1]
+(%i32) Uxy:ratsimp(Uxy)
+(%i33) Vxy:ratsimp(Vxy)
+(%i34) F_terms:expand(Uxy)
+(%i35) G_terms:expand(Vxy)
+(%i36) print("Terms of Uxy:")
+Terms of Uxy: 
+(%i37) for term in F_terms do print(term)
+u1 
+           2    2                    2      2
+        A B  b v                    A  B b v
+------------------------- + -------------------------
+ 2  2                2  2    2  2                2  2
+A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+               2    2                    2      2
+          4 A B  a v                  4 A  B a v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+                                       2
+          A B D b u v                 A  D b u v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+           2
+          B  C b u v                  A B C b u v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+         8 A B D a u v               8 A B C a u v
+ + ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2                          3
+          A B  D b v                   A  D b v
+ - ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+            3                          2
+           B  C b v                   A  B C b v
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+                   2                           2
+          B C D b u                   A C D b u
+ + ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+               2    2                      2    2
+          4 A D  a u                  4 B C  a u
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+               2                       2
+          A B D  b u                  B  C D b u
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+           2                               2
+          A  C D b u                  A B C  b u
+ - ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2  2
+          4 A  D  a u                8 A B C D a u
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2  2
+          4 B  C  a u
+ + ------------------------- 
+    2  2                2  2
+   A  D  - 2 A B C D + B  C
+(%i38) print("Terms of Vxy:")
+Terms of Vxy: 
+(%i39) for term in G_terms do print(term)
+v1 
+                2                           2
+       A B D b v                   A B C b v
+------------------------- + -------------------------
+ 2  2                2  2    2  2                2  2
+A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2      2                    2      2
+          4 A  D a v                  4 B  C a v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2
+          A D  b u v                  B C D b u v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+                                         2
+          A C D b u v                 B C  b u v
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+         8 B C D a u v               8 A C D a u v
+ + ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+               2                       2
+          A B D  b v                  B  C D b v
+ - ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+           2                               2
+          A  C D b v                  A B C  b v
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2  2
+          4 A  D  a v                8 A B C D a v
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2  2                         2    2
+          4 B  C  a v                  C D  b u
+ + ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+            2      2                       2    2
+           C  D b u                   4 C D  a u
+ + ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+             2      2                     3
+          4 C  D a u                   A D  b u
+ - ------------------------- + -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+               2                         2
+          B C D  b u                  A C  D b u
+ - ------------------------- - -------------------------
+    2  2                2  2    2  2                2  2
+   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
+              3
+           B C  b u
+ + ------------------------- 
+    2  2                2  2
+   A  D  - 2 A B C D + B  C
+(%o40) /mnt/d/juan/doctorado/tesis/intermittency-neuroscience/Elaskar-Del Río\
+/maxima/var_transformation.mac
