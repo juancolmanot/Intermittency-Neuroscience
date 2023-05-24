@@ -1,12 +1,12 @@
 
-Maxima 5.45.1 https://maxima.sourceforge.io
+Maxima 5.43.2 http://maxima.sourceforge.net
 using Lisp GNU Common Lisp (GCL) GCL 2.6.12
 Distributed under the GNU Public License. See the file COPYING.
 Dedicated to the memory of William Schelter.
 The function bug_report() provides bug reporting information.
 (%i1) batch("var_transformation.mac")
 
-read and interpret /mnt/d/juan/doctorado/tesis/intermittency-neuroscience/Elaskar-Del Río/maxima/var_transformation.mac
+read and interpret /home/juan/cursos/intermittency-neuroscience/Elaskar-Del Río/maxima/var_transformation.mac
 (%i2) declare([x1,y1,x,y,u,v,u1,v1],noun)
 (%i3) declare([a,b,A,B,C,D],constant)
 (%i4) Fxy:x1 = 4*a*x*(1-x)+b*y*(1-x)
@@ -39,143 +39,51 @@ read and interpret /mnt/d/juan/doctorado/tesis/intermittency-neuroscience/Elaska
 (%i31) Vxy:solve(Vxy,v1)[1]
 (%i32) Uxy:ratsimp(Uxy)
 (%i33) Vxy:ratsimp(Vxy)
-(%i34) F_terms:expand(Uxy)
-(%i35) G_terms:expand(Vxy)
-(%i36) print("Terms of Uxy:")
-Terms of Uxy: 
-(%i37) for term in F_terms do print(term)
-u1 
-           2    2                    2      2
-        A B  b v                    A  B b v
-------------------------- + -------------------------
- 2  2                2  2    2  2                2  2
-A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-               2    2                    2      2
-          4 A B  a v                  4 A  B a v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-                                       2
-          A B D b u v                 A  D b u v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-           2
-          B  C b u v                  A B C b u v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-         8 A B D a u v               8 A B C a u v
- + ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2                          3
-          A B  D b v                   A  D b v
- - ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-            3                          2
-           B  C b v                   A  B C b v
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-                   2                           2
-          B C D b u                   A C D b u
- + ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-               2    2                      2    2
-          4 A D  a u                  4 B C  a u
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-               2                       2
-          A B D  b u                  B  C D b u
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-           2                               2
-          A  C D b u                  A B C  b u
- - ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2  2
-          4 A  D  a u                8 A B C D a u
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2  2
-          4 B  C  a u
- + ------------------------- 
-    2  2                2  2
-   A  D  - 2 A B C D + B  C
-(%i38) print("Terms of Vxy:")
-Terms of Vxy: 
-(%i39) for term in G_terms do print(term)
-v1 
-                2                           2
-       A B D b v                   A B C b v
-------------------------- + -------------------------
- 2  2                2  2    2  2                2  2
-A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2      2                    2      2
-          4 A  D a v                  4 B  C a v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2
-          A D  b u v                  B C D b u v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-                                         2
-          A C D b u v                 B C  b u v
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-         8 B C D a u v               8 A C D a u v
- + ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-               2                       2
-          A B D  b v                  B  C D b v
- - ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-           2                               2
-          A  C D b v                  A B C  b v
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2  2
-          4 A  D  a v                8 A B C D a v
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2  2                         2    2
-          4 B  C  a v                  C D  b u
- + ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-            2      2                       2    2
-           C  D b u                   4 C D  a u
- + ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-             2      2                     3
-          4 C  D a u                   A D  b u
- - ------------------------- + -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-               2                         2
-          B C D  b u                  A C  D b u
- - ------------------------- - -------------------------
-    2  2                2  2    2  2                2  2
-   A  D  - 2 A B C D + B  C    A  D  - 2 A B C D + B  C
-              3
-           B C  b u
- + ------------------------- 
-    2  2                2  2
-   A  D  - 2 A B C D + B  C
-(%o40) /mnt/d/juan/doctorado/tesis/intermittency-neuroscience/Elaskar-Del Río\
-/maxima/var_transformation.mac
+(%i34) F_terms:expand(rhs(Uxy))
+(%i35) G_terms:expand(rhs(Vxy))
+(%i36) n_terms_F:length(F_terms)
+(%i37) n_terms_G:length(G_terms)
+(%i38) F_terms_list:[]
+(%i39) G_terms_list:[]
+(%i40) for i thru n_terms_F do
+           (numer:num(part(F_terms,i)),den:denom(part(F_terms,i)),
+            den:factor(den),term_value:[numer/den],
+            F_terms_list:append(F_terms_list,term_value))
+(%i41) for i thru n_terms_G do
+           (numer:num(part(G_terms,i)),den:denom(part(G_terms,i)),
+            den:factor(den),term_value:[numer/den],
+            G_terms_list:append(G_terms_list,term_value))
+(%i42) grouped_terms_F:[0,0,0,0,0]
+(%i43) grouped_terms_G:[0,0,0,0,0]
+(%i44) matchdeclare(u,true)
+(%i45) matchdeclare(v,true)
+(%i46) matchfix(u,simp)
+(%i47) matchfix(v,simp)
+(%i48) print(F_terms_list)
+     2    2      2      2           2    2        2      2
+  A B  b v      A  B b v       4 A B  a v      4 A  B a v      A B D b u v
+[------------, ------------, - ------------, - ------------, - ------------, 
+            2             2               2               2               2
+ (A D - B C)   (A D - B C)     (A D - B C)     (A D - B C)     (A D - B C)
+    2               2
+   A  D b u v      B  C b u v     A B C b u v   8 A B D a u v  8 A B C a u v
+- ------------, - ------------, - ------------, -------------, -------------, 
+             2               2               2             2              2
+  (A D - B C)     (A D - B C)     (A D - B C)   (A D - B C)    (A D - B C)
+      2            3             3              2                     2
+   A B  D b v     A  D b v      B  C b v       A  B C b v    B C D b u
+- ------------, ------------, ------------, - ------------, ------------, 
+             2             2             2               2             2
+  (A D - B C)   (A D - B C)   (A D - B C)     (A D - B C)   (A D - B C)
+          2          2    2          2    2         2           2
+ A C D b u      4 A D  a u      4 B C  a u     A B D  b u      B  C D b u
+------------, - ------------, - ------------, ------------, - ------------, 
+           2               2               2             2               2
+(A D - B C)     (A D - B C)     (A D - B C)   (A D - B C)     (A D - B C)
+    2                 2          2  2                           2  2
+   A  C D b u    A B C  b u   4 A  D  a u     8 A B C D a u  4 B  C  a u
+- ------------, ------------, ------------, - -------------, ------------] 
+             2             2             2               2              2
+  (A D - B C)   (A D - B C)   (A D - B C)     (A D - B C)    (A D - B C)
+(%o49) /home/juan/cursos/intermittency-neuroscience/Elaskar-Del Río/maxima/va\
+r_transformation.mac

@@ -42,13 +42,38 @@ Vxy: solve(Vxy, v1)[1]$
 Uxy: ratsimp(Uxy)$
 Vxy: ratsimp(Vxy)$
 
-F_terms: expand(Uxy)$
-G_terms: expand(Vxy)$
+F_terms: expand(rhs(Uxy))$
+G_terms: expand(rhs(Vxy))$
 
-print("Terms of Uxy:")$
-for term in F_terms do
-	print(term)$
+n_terms_F: length(F_terms)$
+n_terms_G: length(G_terms)$
 
-print("Terms of Vxy:")$
-for term in G_terms do
-	print(term)$
+F_terms_list: []$
+G_terms_list: []$
+
+for i: 1 thru n_terms_F do (
+	numer: num(part(F_terms, i)),
+	den: denom(part(F_terms, i)),
+	den: factor(den),
+	term_value: [numer/den],
+	F_terms_list: append(F_terms_list, term_value)
+)$
+
+for i: 1 thru n_terms_G do (
+	numer: num(part(G_terms, i)),
+	den: denom(part(G_terms, i)),
+	den: factor(den),
+	term_value: [numer/den],
+	G_terms_list: append(G_terms_list, term_value)
+)$
+
+grouped_terms_F: [0, 0, 0, 0, 0]$
+grouped_terms_G: [0, 0, 0, 0, 0]$
+
+matchdeclare(u, true)$
+matchdeclare(v, true)$
+
+matchfix(u, simp)$
+matchfix(v, simp)$
+
+print(F_terms_list)$
