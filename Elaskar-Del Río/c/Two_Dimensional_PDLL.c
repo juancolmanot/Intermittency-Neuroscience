@@ -1,24 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <omp.h>
+#include "../../../../cursos/modulosc/mt64.h"
 #include "../../../../cursos/modulosc/linear_algebra.h"
 #include "../../../../cursos/modulosc/intermittency.h"
 
-void rel_err(double* x, double* x1, double* xerr) {
-
-    xerr[0] = fabs((x1[0] - x[0]) / x[0]);
-    xerr[1] = fabs((x1[1] - x[1]) / x[1]);
-}
 
 int main() {
 
-    FILE* fp = fopen("datafiles/Two_Dimensional_PDLL.dat", "w");
+    FILE* fp = fopen("datafiles/Two_Dimensional_PDLL_x.dat", "w");
 
     unsigned int i, j, k;
-    unsigned int n_eps = 20;
     double alpha_c = 0.7782561;
     double beta = 0.3;
+    double alpha_i = 0;
     unsigned int n_mapa = 14;
+    
+    alpha_i = alpha_c - 1e-6;
 
     unsigned int reinjections_target = 1e6;
     double c = 1e-4;
@@ -29,85 +28,105 @@ int main() {
     unsigned int start_laminar = 0;
 
     /* state variables */
-    double* xn = malloc(2 * sizeof(double));
-    double* xn1 = malloc(2 * sizeof(double));
-    double* xn2 = malloc(2 * sizeof(double));
-    double* xerr = malloc(2 * sizeof(double));
-    double* x1err = malloc(2 * sizeof(double));
+    double* xn = calloc(2, sizeof(double));
+    double* xn1 = calloc(2,  sizeof(double));
+    double* xn2 = calloc(2,  sizeof(double));
+    double* xerr = calloc(2,  sizeof(double));
+    double* x1err = calloc(2,  sizeof(double));
 
     /* laminar lengths */
-    unsigned int n_bins_l = 100;
-    double* lengths = malloc(reinjections_target * sizeof(double));
-    double* l_pd = malloc(n_bins_l * sizeof(double));
-    double* l_avg = malloc(n_bins_l * sizeof(double));
-    double* l_bins = malloc(n_bins_l * sizeof(double));
-    double l_min;
-    double l_max;
     double l_exp = 0;
 
-    xn[0] = 0.4;
-    xn[1] = 0.8;
+    unsigned int seed = 128432;
+
+    srand(seed);
+    init_genrand64((unsigned long long) seed);
+
+    double* lengths = calloc(reinjections_target, sizeof(double));
+
+    xn[0] = genrand64_real3();
+    xn[1] = genrand64_real3();
+    
+    // xn[0] = (double)rand() / (double) RAND_MAX;
+    // xn[1] = (double)rand() / (double) RAND_MAX;
     xn1[0] = xn1[1] = 0;
     xn2[0] = xn2[1] = 0;
-    xerr[0] = xerr[1] = x1err[0] = x1err[1] = 0;
+    xerr[0] = xerr[1] = 0;
+    x1err[0] = x1err[1] = 0;
 
     reinjection_counter = 0;
     iterations = 0;
     start_laminar = 0;
-
     while (reinjection_counter < reinjections_target) {
-    
+        
         iterations++;
-        map_2d_n(xn1, xn, n_mapa, alpha_c, beta);
+
+        map_2d_n(xn1, xn, n_mapa, alpha_i, beta);
         rel_err(xn, xn1, xerr);
-        map_2d_n(xn2, xn1, n_mapa, alpha_c, beta);
+        map_2d_n(xn2, xn1, n_mapa, alpha_i, beta);
         rel_err(xn1, xn2, x1err);
 
-        if (reinjection(x1err[0], xerr[0], c, 0)) {
+        if (reinjection(x1err[0], xerr[0], c)) {
             reinjection_counter++;
             start_laminar = iterations;
-            if (reinjection_counter % 100000 == 0) {
-                printf("%d\n", reinjection_counter);
+            if (reinjection_counter % (unsigned int)(reinjections_target * 0.25) == 0) {
+                int thread_n = omp_get_thread_num();
+                printf("Thread %d: %d  %d\n", thread_n, i, reinjection_counter);
             }
         }
-        else if (ejection(x1err[0], xerr[0], c, 0)) {
+        else if (ejection(x1err[0], xerr[0], c) && reinjection_counter > 0) {
             lengths[reinjection_counter - 1] = iterations - start_laminar;
-        }
 
+        }
         xn[0] = xn2[0];
         xn[1] = xn2[1];
+
+        xn1[0] = xn1[1] = xn2[0] = xn2[1] = 0;
+
+        if (iterations % 1000000 == 0) {
+
+            xn[0] = genrand64_real3();
+            xn[1] = genrand64_real3();
+
+            // xn[0] = (double)rand() / (double) RAND_MAX;
+            // xn[1] = (double)rand() / (double) RAND_MAX;
+        }
+
     }
 
-    l_min = min(lengths);
-    l_max = max(lengths);
+    unsigned int n_bins_l;
 
-    n_bins_l = (int) l_max;
+    n_bins_l = (unsigned int) max(lengths);
 
-    l_bins = linspace(l_min, l_max, n_bins_l);
-
-    for (i = 0; i < n_bins_l; i++) {
-        for (j = 0; j < reinjections_target; j++) {
-            if (lengths[j] > l_bins[i] && lengths[j] <= l_bins[i + 1]) {
-                l_avg[i] = l_avg[i] + lengths[j];
-                l_pd[i] = l_pd[i] + 1;
+    double* l_pd = calloc(n_bins_l,  sizeof(double));
+    double* l_avg = calloc(n_bins_l,  sizeof(double));
+    
+    for (j = 0; j < n_bins_l - 1; j++) {
+        for (k = 0; k < reinjections_target; k++) {
+            if (lengths[k] > j + 1 && lengths[k] <= j + 2) {
+                l_avg[j] += lengths[k];
+                l_pd[j] += 1;
             }
         }
-        if (l_pd[i] != 0) {
-            l_avg[i] = l_avg[i] / l_pd[i];
+        if (l_pd[j] != 0) {
+            l_avg[j] = l_avg[j] / l_pd[j];
         }
-        else if (l_pd[i] == 0) {
-            l_avg[i] = 0;
+        else if (l_pd[j] == 0) {
+            l_avg[j] = 0;
         }
-        l_pd[i] = l_pd[i] / (double)reinjections_target;
-        fprintf(fp, "%f %f  %f\n", l_bins[i], l_pd[i], l_avg[i]);
+        l_pd[j] = l_pd[j] / (double)reinjections_target;
+        l_exp += l_pd[j] * l_avg[j];
+        fprintf(fp, "%d %3.12f %3.12f   %3.12f\n", j + 1, l_pd[j], l_avg[j], l_exp);
     }
 
-    for (i = 0; i < n_bins_l; i++) {
-        l_exp = l_exp + l_avg[i] * l_pd[i];
-    }
-
-    printf("%f\n", log(l_exp));
-
+    free(lengths);
+    free(l_avg);
+    free(l_pd);
+    free(xn);
+    free(xn1);
+    free(xn2);
+    free(xerr);
+    free(x1err);
     fclose(fp);
     return 0;
 }
