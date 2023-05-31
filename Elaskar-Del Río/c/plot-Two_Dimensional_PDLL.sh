@@ -1,0 +1,25 @@
+#!/usr/bin/gnuplot
+
+set terminal pdfcairo size 16,8 font 'Arial, 21'
+
+set output "plots/plot_Two_Dimensional_PDLL.pdf"
+
+set grid lw 2
+
+set key font ',14'
+set ytics font ',14'
+set xtics font ',14'
+
+set multiplot layout 1,2 rowsfirst
+
+set ylabel 'p(l)'
+set xlabel 'l'
+
+p 'datafiles/Two_Dimensional_PDLL_x.dat' u 1:2 notitle w l
+
+set ylabel '<l>'
+set xlabel 'l'
+
+p 'datafiles/Two_Dimensional_PDLL_x.dat' u 1:4 notitle w l
+
+unset multiplot
