@@ -20,7 +20,7 @@ int main() {
     /* Map parameters */
     double alpha_c = 0.674149344;
     double alpha_i;
-    double epsilon = 8.9999e-6;
+    double epsilon = 1e-2;
     alpha_i = alpha_c - epsilon;
     double beta = 0.5;
 
@@ -58,6 +58,6 @@ int main() {
     fclose(fp);
     fclose(fp1);
 
-   return 0;
+    return 0;
 }
 
