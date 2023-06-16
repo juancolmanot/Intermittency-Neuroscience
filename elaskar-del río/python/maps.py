@@ -8,6 +8,19 @@ def mapa(xn, *args):
 
     return [xn1, yn1]
 
+def mapa_14(xn, *args):
+
+    alpha = args[0]
+    beta = args[1]
+
+    xn_aux = xn
+    
+    for i in range(14):
+        xn1 = mapa(xn_aux, alpha, beta)
+        xn_aux = xn1
+
+    return xn1
+
 def mapa_n(xn, n, *args):
 
     alpha = args[0]
