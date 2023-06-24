@@ -1,0 +1,59 @@
+/* Declare variables */
+x: 'x$
+y: 'y$
+u: 'u$
+v: 'v$
+theta: 'theta$
+
+/* Display the system of equations */
+
+display2d: true$
+
+
+/* Define equations */
+
+f: x1 = (4 * alpha * x + beta * y) * (1 - x)$
+g: y1 = (4 * alpha * y + beta * x) * (1 - y)$
+
+/* Define system of equations */
+equations: matrix(
+    [(4 * alpha * x + beta * y) * (1 - x)],
+    [(4 * alpha * y + beta * x) * (1 - y)]
+)$
+
+/* Rotation matrix */
+
+rotation_matrix: matrix(
+    [cos(theta), -sin(theta)],
+    [sin(theta), cos(theta)]
+)$
+
+rotated_coor: rotation_matrix . matrix([x], [y])$
+
+eq1: u = rotated_coor[1][1]$
+eq2: v = rotated_coor[2][1]$
+
+/* Solve system of equations */
+
+solutions: solve([eq1, eq2], [x, y])$
+
+fx: rhs(trigsimp(solutions[1][1]))$
+fy: rhs(trigsimp(solutions[1][2]))$
+
+f: subst([x = fx, y = fy], f)$
+g: subst([x = fx, y = fy], g)$
+
+f: x1 = trigsimp(rhs(f))$
+g: y1 = trigsimp(rhs(g))$
+
+eq1: subst([u = u1, x = x1, y = y1], eq1)$
+eq2: subst([v = v1, x = x1, y = y1], eq2)$
+
+solutions: solve([eq1, eq2], [x1, y1])$
+
+fx1: rhs(trigsimp(solutions[1][1]))$
+fy1: rhs(trigsimp(solutions[1][2]))$
+
+f: subst([x1 = fx1, y1 = fy1], f);
+g: subst([x1 = fx1, y1 = fy1], g);
+
