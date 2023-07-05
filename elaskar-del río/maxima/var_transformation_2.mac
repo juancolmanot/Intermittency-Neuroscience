@@ -1,11 +1,11 @@
-declare([x1, y1, x, y, u, v, u1, v1], noun)$
-declare([a, b, A, B, C, D], constant)$
+declare([x1, y1, x, y, u, v, u1, v1, theta], noun)$
+declare([a, b], constant)$
 
 Fxy: x1 = 4 * a * x * (1 - x) + b * y * (1 - x)$
 Gxy: y1 = 4 * a * y * (1 - y) + b * x * (1 - y)$
 
-tu: u = x + y$
-tv: v = x - y$
+tu: u = cos(theta) * x + sin(theta) * y$
+tv: v = -sin(theta) * x + cos(theta) * y$
 
 tu1: u1 = x1 + y1$
 tv1: v1 = x1 - y1$
@@ -19,6 +19,7 @@ Fxy: subst(y_sol, y, Fxy)$
 Fxy: subst(rhs(x_sol1), x1, Fxy)$
 Fxy: subst(rhs(y_sol1), y1, Fxy)$
 Fxy: lhs(Fxy) = rhs(rhs(rhs(Fxy)))$
+
 Gxy: subst(x_sol, x, Gxy)$
 Gxy: subst(y_sol, y, Gxy)$
 Gxy: subst(rhs(x_sol1), x1, Gxy)$
@@ -55,6 +56,7 @@ for i: 1 thru n_terms_F do (
 	numer: num(part(F_terms, i)),
 	den: denom(part(F_terms, i)),
 	den: factor(den),
+	den: subst((sin(theta))^2 + (cos(theta))^2 = 1, den),
 	term_value: [numer/den],
 	F_terms_list: append(F_terms_list, term_value)
 )$
@@ -63,6 +65,7 @@ for i: 1 thru n_terms_G do (
 	numer: num(part(G_terms, i)),
 	den: denom(part(G_terms, i)),
 	den: factor(den),
+	den: subst((sin(theta))^2 + (cos(theta))^2 = 1, den),
 	term_value: [numer/den],
 	G_terms_list: append(G_terms_list, term_value)
 )$
@@ -107,6 +110,10 @@ for i: 1 thru n_terms_G do (
 		grouped_terms_G[5]: grouped_terms_G[5] + term
 	)
 )$
+
+Uxy: u1 = 0$
+Vxy: v1 = 0$
+
 for i: 1 thru length(grouped_terms_F) do (
 	grouped_terms_F[i]: factor(grouped_terms_F[i]),
 	grouped_terms_G[i]: factor(grouped_terms_G[i]),
@@ -116,22 +123,43 @@ for i: 1 thru length(grouped_terms_F) do (
 	den2: denom(grouped_terms_G[i]),
 	grouped_terms_F[i]: factor(numer1) / den1,
 	grouped_terms_G[i]: factor(numer2) / den2,
-	print("F: ", grouped_terms_F[i]),
-	print("G: ", grouped_terms_G[i])
+	Uxy: u1 = rhs(Uxy) + grouped_terms_F[i],
+	Vxy: v1 = rhs(Vxy) + grouped_terms_G[i]
 )$
 
+cross_term_F:grouped_terms_F[3]$
+cross_term_G:grouped_terms_G[3]$
+cross_term_F: coeff(cross_term_F, v, 1)$
+cross_term_G: coeff(cross_term_G, v, 1)$
+cross_term_F: coeff(cross_term_F, u, 1)$
+cross_term_G: coeff(cross_term_G, u, 1)$
+
+cross_term_F: cross_term_F = 0$
+cross_term_G: cross_term_G = 0$
+
+theta_root_F: solve(cross_term_F, theta)$
+theta_root_G: solve(cross_term_G, theta)$
 
 
 
+for i: 1 thru length(grouped_terms_F) do (
+	grouped_terms_F[i]: subst((sin(theta))^2 + (cos(theta))^2 = 1, grouped_terms_F[i]),
+	print("Fi: ", grouped_terms_F[i])
+)$
 
+for i: 1 thru length(grouped_terms_G) do (
+	grouped_terms_G[i]: subst((sin(theta))^2 + (cos(theta))^2 = 1, grouped_terms_G[i]),
+	print("Gi: ", grouped_terms_G[i])
+)$
 
+theta_roots: [0, 0.25 * %pi, 0.5 * %pi, %pi, 1.25 * %pi, 1.5 * %pi, 1.75 * %pi, 2 * %pi]$
 
-
-
-
-
-
-
+for i: 1 thru length(theta_roots) do (
+	print("---------------------------------------------------------------------------"),
+	print(subst(theta=theta_roots[i], rhs(Uxy))),
+	print(subst(theta=theta_roots[i], rhs(Vxy)))
+		
+)$
 
 
 
