@@ -7,7 +7,7 @@
 #include <gsl/gsl_odeiv2.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include "../../../../modulosc/lorenz.h"
+#include "../../../../../cursos/modulosc/lorenz.h"
 
 int main(void) {
 
@@ -30,7 +30,7 @@ int main(void) {
 
     gsl_odeiv2_system sys = {lorenz, jaclorenz, 3, p};
 
-    double t = 0.0, t1 = 2.0;
+    double t = 0.0, t1 = 1000.0, t2 = 20000.0;
     gsl_rng *rng = gsl_rng_alloc(gsl_rng_default);
     gsl_rng_set(rng, seed);
     double x[3];
@@ -47,7 +47,6 @@ int main(void) {
             break;
         }
 
-        // printf("%5.15f  %5.15f  %5.15f  %5.15f  %5.15f\n", t, x[0], x[1], x[2], h);
         fprintf(evolution, "%5.15f  %5.15f  %5.15f  %5.15f  %5.15f\n", t, x[0], x[1], x[2], h);
     }
 

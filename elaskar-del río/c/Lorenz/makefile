@@ -5,12 +5,12 @@
 CC=gcc
 OMP=-fopenmp
 GDB=-g
-MPATH=../../../../modulosc/
-FFTH= -I../../../../modulosc/fftw-3.3.10/api/
+MPATH=../../../../../cursos/modulosc/
+FFTH= -I../../../../../cursos/modulosc/fftw-3.3.10/api/
 FFTC= -L/usr/local/lib/
 HPATH= -I${MPATH}
 CPATH= -L${MPATH}
-LDLIBS= -lgsl -lgslcblas -lfftw3 -lm
+LDLIBS= -lgsl -lgslcblas -lm
 OPTFLAGS=-O3
 
 # ====================================================================
