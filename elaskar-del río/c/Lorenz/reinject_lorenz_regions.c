@@ -134,21 +134,23 @@ int main(void) {
     }
 
     /* Laminar region */
-    FILE *region_1, *region_2, *region_3, *region_4;
+    FILE *region_1, *region_2, *region_3, *region_4, *region_5;
     region_1 = fopen("../datafiles/reinject_region1.dat", "w");
     region_2 = fopen("../datafiles/reinject_region2.dat", "w");
     region_3 = fopen("../datafiles/reinject_region3.dat", "w");
     region_4 = fopen("../datafiles/reinject_region4.dat", "w");
+    region_5 = fopen("../datafiles/reinject_region5.dat", "w");
     double yf = 41.2861;
     double clam = 1.85;
     unsigned int count_reinject = 0;
-    double yr0, yr1, yr2, yr3, yr4, yr5;
+    double yr0, yr1, yr2, yr3, yr4, yr5, yr6;
     yr0 = 5;
     yr1 = 18;
-    yr2 = 30;
-    yr3 = 40;
-    yr4 = 45;
-    yr5 = 70;
+    yr2 = 25;
+    yr3 = 30;
+    yr4 = 40;
+    yr5 = 45;
+    yr6 = 70;
 
     for (unsigned int i = 1; i < pass_target; i++) {
         if (yreg[i] >= yf - clam && yreg[i] <= yf + clam) {
@@ -163,8 +165,11 @@ int main(void) {
                 if (yreg[i - 1] > yr2 && yreg[i - 1] < yr3) {
                     fprintf(region_3, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                 }
-                if (yreg[i - 1] > yr4 && yreg[i - 1] < yr5) {
+                if (yreg[i - 1] > yr3 && yreg[i - 1] < yr4) {
                     fprintf(region_4, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                }
+                if (yreg[i - 1] > yr5 && yreg[i - 1] < yr6) {
+                    fprintf(region_5, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                 }
             }
         }
@@ -176,13 +181,18 @@ int main(void) {
     RPD3 = fopen("../datafiles/rpd_lorenz_3.dat", "w");
     RPD4 = fopen("../datafiles/rpd_lorenz_4.dat", "w");
     RPD5 = fopen("../datafiles/rpd_lorenz_5.dat", "w");
-    unsigned int n_bins = 750;
+    unsigned int n_bins = 200;
     double ymin, ymax, yj, dy;
     ymin = yf - clam;
     ymax = yf + clam;
     dy = (ymax - ymin) / (double)(n_bins - 1);
     yj = ymin;
-    double *yreinjected = calloc(n_bins, sizeof(double));
+    double *yreinjected1, *yreinjected2, *yreinjected3, *yreinjected4, *yreinjected5;
+    yreinjected1 = calloc(n_bins, sizeof(double));
+    yreinjected2 = calloc(n_bins, sizeof(double));
+    yreinjected3 = calloc(n_bins, sizeof(double));
+    yreinjected4 = calloc(n_bins, sizeof(double));
+    yreinjected5 = calloc(n_bins, sizeof(double));
     double knorm = 0;
     
     /* Increment y from min to max to generate bins */
@@ -195,24 +205,31 @@ int main(void) {
             if (yreg[j] > yj && yreg[j] <= yj + dy) {
                 if (yreg[j] >= yf - clam && yreg[j] <= yf + clam) {
                     if (yreg[j - 1] < yf - clam || yreg[j - 1] > yf + clam) {
-                        yreinjected[i]++;
                         if (yreg[j - 1] > yr0 && yreg[j - 1] < yr1) {
-                        fprintf(RPD1, "%5.15f  %5.15f\n", yj, yreinjected[i]);
+                            yreinjected1[i]++;
                         }
                         if (yreg[j - 1] > yr1 && yreg[j - 1] < yr2) {
-                            fprintf(RPD2, "%5.15f  %5.15f\n", yj, yreinjected[i]);
+                            yreinjected2[i]++;
                         }
                         if (yreg[j - 1] > yr2 && yreg[j - 1] < yr3) {
-                            fprintf(RPD3, "%5.15f  %5.15f\n", yj, yreinjected[i]);
+                            yreinjected3[i]++;
                         }
-                        if (yreg[j - 1] > yr4 && yreg[j - 1] < yr5) {
-                            fprintf(RPD4, "%5.15f  %5.15f\n", yj, yreinjected[i]);
+                        if (yreg[j - 1] > yr3 && yreg[j - 1] < yr4) {
+                            yreinjected4[i]++;
+                        }
+                        if (yreg[j - 1] > yr5 && yreg[j - 1] < yr6) {
+                            yreinjected5[i]++;
                         }
                     }
                 }
             }
         }
-        yreinjected[i] = yreinjected[i] / (double)count_reinject;
+        
+        fprintf(RPD1, "%5.15f  %5.15f\n", yj, yreinjected1[i]);
+        fprintf(RPD2, "%5.15f  %5.15f\n", yj, yreinjected2[i]);
+        fprintf(RPD3, "%5.15f  %5.15f\n", yj, yreinjected3[i]);
+        fprintf(RPD4, "%5.15f  %5.15f\n", yj, yreinjected4[i]);
+        fprintf(RPD5, "%5.15f  %5.15f\n", yj, yreinjected5[i]);
         yj += dy;
     }
 

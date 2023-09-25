@@ -1,0 +1,9 @@
+terminal=pdfcairo
+size=[4,4]
+datafile=../datafiles/reinject_region5.dat
+font=Arial,21
+outputfile=../plots/reinject_region5.pdf
+cols=[1,2]
+labels=["y(i-1)","y(i)","Reinject-Region5"]
+legends=["mapa-y"]
+nplots=1
