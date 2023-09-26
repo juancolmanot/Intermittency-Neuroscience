@@ -42,7 +42,7 @@ int main(void) {
 
     /* Passes counter */
     unsigned int counter = 0;
-    unsigned int pass_target = 400000;
+    unsigned int pass_target = 800000;
 
     /* Arrays for x, y, z */
     double xi[3], yi[3], zi[3];
