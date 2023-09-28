@@ -17,6 +17,8 @@ int main(void) {
 
     int *shape;
 
+    double x_lam, rpd;
+
     shape = get_n_lines(filename);
 
     printf("rows: %d, cols: %d\n", shape[0], shape[1]);
@@ -24,6 +26,12 @@ int main(void) {
     gsl_matrix *m;
 
     m = file_data(filename, shape);
+
+    for (unsigned int i = 0; i < shape[0]; i++){
+        x_lam = gsl_matrix_get(m, i, 0);
+        rpd = gsl_matrix_get(m, i, 1);
+        printf("m[%d, 0]: %f, m[%d, 1]: %f\n",i ,x_lam, i, rpd);
+    }
 
     return 0;
 }
