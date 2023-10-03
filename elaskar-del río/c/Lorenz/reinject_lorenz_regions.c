@@ -12,7 +12,14 @@
 
 int main(void) {
 
-    FILE *poincare = fopen("../datafiles/poincare_section_lorenz.dat", "w");
+    FILE *poincare, *reinjected1, *reinjected2, *reinjected3, *reinjected4, *reinjected5, *reinjected;
+    poincare = fopen("../datafiles/poincare_section_lorenz.dat", "w");
+    reinjected1 = fopen("../datafiles/reinjected_lorenz_1.dat", "w");
+    reinjected2 = fopen("../datafiles/reinjected_lorenz_2.dat", "w");
+    reinjected3 = fopen("../datafiles/reinjected_lorenz_3.dat", "w");
+    reinjected4 = fopen("../datafiles/reinjected_lorenz_4.dat", "w");
+    reinjected5 = fopen("../datafiles/reinjected_lorenz_5.dat", "w");
+    reinjected = fopen("../datafiles/reinjected_lorenz.dat", "w");
 
     unsigned long int seed = (unsigned long int)time(NULL);
 
@@ -156,20 +163,26 @@ int main(void) {
         if (yreg[i] >= yf - clam && yreg[i] <= yf + clam) {
             if (yreg[i - 1] > yf + clam || yreg[i - 1] < yf - clam) {
                 count_reinject++;
+                fprintf(reinjected, "%5.15f\n", yreg[i]);
                 if (yreg[i - 1] > yr0 && yreg[i - 1] < yr1) {
                     fprintf(region_1, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                    fprintf(reinjected1, "%5.15f\n", yreg[i]);
                 }
                 if (yreg[i - 1] > yr1 && yreg[i - 1] < yr2) {
                     fprintf(region_2, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                    fprintf(reinjected2, "%5.15f\n", yreg[i]);
                 }
                 if (yreg[i - 1] > yr2 && yreg[i - 1] < yr3) {
                     fprintf(region_3, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                    fprintf(reinjected3, "%5.15f\n", yreg[i]);
                 }
                 if (yreg[i - 1] > yr3 && yreg[i - 1] < yr4) {
                     fprintf(region_4, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                    fprintf(reinjected4, "%5.15f\n", yreg[i]);
                 }
                 if (yreg[i - 1] > yr5 && yreg[i - 1] < yr6) {
                     fprintf(region_5, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
+                    fprintf(reinjected5, "%5.15f\n", yreg[i]);
                 }
             }
         }
@@ -246,5 +259,11 @@ int main(void) {
     fclose(RPD2);
     fclose(RPD3);
     fclose(RPD4);
+    fclose(reinjected);
+    fclose(reinjected1);
+    fclose(reinjected2);
+    fclose(reinjected3);
+    fclose(reinjected4);
+    fclose(reinjected5);
     return 0;
 }

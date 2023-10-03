@@ -4,34 +4,51 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
-#include <gsl/gsl_odeiv2.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
+#include <gsl/gsl_sort_vector.h>
 #include "../../../../../cursos/modulosc/lorenz.h"
 #include "../../../../../cursos/modulosc/get_file_lines.h"
 #include "../../../../../cursos/modulosc/read_file.h"
 
 int main(void) {
     
-    char filename[1024] = "../datafiles/rpd_lorenz_1.dat";
+    FILE *m_region1;
+
+    m_region1 = fopen("../datafiles/m_function_all.dat", "w");
+
+    char filename[1024] = "../datafiles/reinjected_lorenz.dat";
 
     int *shape;
 
-    double x_lam, rpd;
+    double *rpd;
 
     shape = get_n_lines(filename);
 
+    rpd = calloc(shape[0], sizeof(double));
+
     printf("rows: %d, cols: %d\n", shape[0], shape[1]);
 
-    gsl_matrix *m;
+    gsl_vector *vector_data, *x_reinjected;
+    
+    x_reinjected = gsl_vector_alloc(shape[0]);
 
-    m = file_data(filename, shape);
+    vector_data = file_data_vector(filename, shape[0]);
 
     for (unsigned int i = 0; i < shape[0]; i++){
-        x_lam = gsl_matrix_get(m, i, 0);
-        rpd = gsl_matrix_get(m, i, 1);
-        printf("m[%d, 0]: %f, m[%d, 1]: %f\n",i ,x_lam, i, rpd);
+        gsl_vector_set(x_reinjected, i, gsl_vector_get(vector_data, i));
     }
+    
+    gsl_sort_vector(x_reinjected);
+
+    double M_i = 0;
+
+    for (unsigned int i = 0; i < shape[0]; i++){
+        M_i += gsl_vector_get(x_reinjected, i);
+        fprintf(m_region1, "%5.15f %5.15f\n", gsl_vector_get(x_reinjected, i), M_i / (double) (i + 1));
+    }
+
+    fclose(m_region1);
+    gsl_vector_free(vector_data);
+    gsl_vector_free(x_reinjected);
 
     return 0;
 }
