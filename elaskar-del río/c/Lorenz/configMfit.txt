@@ -1,0 +1,9 @@
+terminal=pdfcairo
+size=[6,6]
+datafile=../datafiles/m_fit_5.dat
+font=Arial,21
+outputfile=../plots/m_fit5.pdf
+cols=[1,2,1,3]
+labels=["y","M(y)","Función\tM\t5"]
+legends=["numerical","fitted"]
+nplots=2
