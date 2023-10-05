@@ -14,18 +14,17 @@
 #include "../../../../../cursos/modulosc/read_file.h"
 #include "../../../../../cursos/modulosc/intermittency.h"
 
-
 int main(void) {
     
     /* Abrimos archivo a almacenar ajuste de rpd. */
 
     FILE *rpd_fit;
 
-    rpd_fit = fopen("../datafiles/rpd_fit_1.dat", "w");
+    rpd_fit = fopen("../datafiles/rpd_5_norm_fitted.dat", "w");
 
     /* Nombramos archivos de donde leeremos los datos */
 
-    char filename1[1024] = "../datafiles/rpd_lorenz_1.dat";
+    char filename1[1024] = "../datafiles/rpd_lorenz_5.dat";
     char filename2[1024] = "../datafiles/rpd_weights.dat";
     char filename3[1024] = "../datafiles/m_slopes.dat";
 
@@ -65,13 +64,14 @@ int main(void) {
     for (unsigned int i = 0; i < shape2[0]; i++){
         count_tot += gsl_vector_get(count_data, i);
     }
-    /* Abrimos archivo para escribir la rpd normalizada numérica */
-    FILE *rpd_norm = fopen("../datafiles/rpd_lorenz_1_norm.dat", "w");
 
+    /* Abrimos archivo para escribir la rpd normalizada numérica */
+    FILE *rpd_norm = fopen("../datafiles/rpd_5_norm_numerical.dat", "w");
+    
     /* Escribimos vectores x y rpd y a su vez el archivo de la rpd normalizada */
     for (unsigned int i = 0; i < shape1[0]; i++){
         gsl_vector_set(x, i, gsl_matrix_get(matrix_data, i, 0));
-        gsl_vector_set(rpd_x, i, (gsl_matrix_get(matrix_data, i, 1) * gsl_vector_get(count_data, 0)) / (double) count_tot);
+        gsl_vector_set(rpd_x, i, gsl_matrix_get(matrix_data, i, 1));
         fprintf(rpd_norm, "%5.8f %5.8f\n", gsl_vector_get(x, i), gsl_vector_get(rpd_x, i));
     }
 
@@ -80,51 +80,55 @@ int main(void) {
     double alpha, b, m; // parámetros de la función rpd y pendiende de la función M
     
     /* Computamos los diferentes parámetros */
-    wi = (double) gsl_vector_get(count_data, 0) / (double) count_tot;
-    m = gsl_vector_get(m_slopes, 0);
+    wi = (double) gsl_vector_get(count_data, 4) / (double) count_tot;
+    m = gsl_vector_get(m_slopes, 6);
     alpha = (2 * m - 1) / (1 - m);
 
+    double integral_numeric, dx, b_numeric;
+    dx = (gsl_vector_get(x, 1) - gsl_vector_get(x, 0));
+
+    for (unsigned int i = 0; i < shape1[0]; i++) {
+        integral_numeric += gsl_vector_get(rpd_x, i);
+        printf("%f %f %f\n", gsl_vector_get(x, i), gsl_vector_get(rpd_x, i), integral_numeric);
+    }
+
+    integral_numeric = integral_numeric * dx;
+
+    b_numeric = wi / integral_numeric;
+
     /* Declaramos las variables a usar para la integración */
-    double integral_rpd, dx, xc, xi;
+    double integral_rpd, xc, xi;
     
     /* Límite inferior de la región laminar y paso de integración del dominio */
     xc = gsl_vector_get(x, 0);
-    dx = (gsl_vector_get(x, 1) - gsl_vector_get(x, 0)) / (double) shape1[0];
 
     FILE *integral_calc = fopen("../datafiles/integral_test.dat", "w");
 
     /* Computamos la integral */
-    // integral_rpd += 0.5 * powf(gsl_vector_get(x, 0) - xc, alpha) * dx;
-    // fprintf(integral_calc, "%5.8f %5.8f %5.8f\n",
-    //     gsl_vector_get(x, 0),
-    //     powf(gsl_vector_get(x, 0) - xc, alpha),
-    //     integral_rpd
-    // );
-    for (unsigned int i = 1; i < shape1[0] - 1; i++) {
-        integral_rpd += powf(gsl_vector_get(x, i) - xc, alpha) * dx;
-        fprintf(integral_calc, "%5.8f %5.8f %5.8f\n",
-        gsl_vector_get(x, i),
-        powf(gsl_vector_get(x, i) - xc, alpha),
-        integral_rpd
-    );
+    for (unsigned int i = 3; i < shape1[0] - 1; i++) {
+        integral_rpd += powf(gsl_vector_get(x, i) - xc, alpha);
     }
-    integral_rpd += 0.5 * powf(gsl_vector_get(x, shape1[0] - 1) - xc, alpha) * dx;
-    fprintf(integral_calc, "%5.8f %5.8f %5.8f\n",
-        gsl_vector_get(x, shape1[0] - 1),
-        powf(gsl_vector_get(x, shape1[0] - 1) - xc, alpha),
-        integral_rpd
-    );
-    // integral_rpd *= dx;
+    integral_rpd += 0.5 * powf(gsl_vector_get(x, shape1[0] - 1) - xc, alpha);
+    integral_rpd *= dx;
 
     /* Cálculo de constante de normalización */
     b = wi / integral_rpd;
 
     printf("wi: %f, integral_rpd: %f, b: %f\n", wi, integral_rpd, b);
+    printf("wi: %f, integral_numerical: %f, b_numerical: %f\n", wi, integral_numeric, b_numeric);
+    printf("alpha: %f\n", alpha);
 
     for (unsigned int i = 0; i < shape1[0]; i++) {
         xi = gsl_vector_get(x, i);
-        fprintf(rpd_fit, "%5.8f %5.8f %5.8f\n", xi, gsl_vector_get(rpd_x, i), b * powf(xi - xc, alpha));
+        fprintf(rpd_fit, "%5.8f %5.8f %5.8f\n", xi, b_numeric * gsl_vector_get(rpd_x, i), b * powf(xi - xc, alpha));
     }
+    // double m_2, alpha_2;
+    // m_2 = gsl_vector_get(m_slopes, 5);
+    // alpha_2 = (2 * m_2 - 1) / (1 - m_2);
+    // for (unsigned int i = 50; i < shape1[0]; i++) {
+    //     xi = gsl_vector_get(x, i);
+    //     fprintf(rpd_fit, "%5.8f %5.8f %5.8f\n", xi, b_numeric * gsl_vector_get(rpd_x, i), b * powf(xi - xc, alpha_2));
+    // }
 
     free(shape1);
     free(shape2);
@@ -134,7 +138,6 @@ int main(void) {
     gsl_matrix_free(matrix_data);
     gsl_vector_free(count_data);
     gsl_vector_free(rpd_x);
-    // gsl_integration_workspace_free(iw);
 
     return 0;
 }
