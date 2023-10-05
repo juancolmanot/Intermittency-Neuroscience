@@ -8,7 +8,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include "../../../../../cursos/modulosc/lorenz.h"
-// #include "../../../../../cursos/modulosc/gsl_utilities.h"
+#include "../../../../../cursos/modulosc/gsl_utilities.h"
 
 int main(void) {
 
@@ -159,6 +159,10 @@ int main(void) {
     yr5 = 45;
     yr6 = 70;
 
+    unsigned int counter1, counter2, counter3, counter4, counter5;
+
+    counter1 = counter2 = counter3 = counter4 = counter5 = 0;
+
     for (unsigned int i = 1; i < pass_target; i++) {
         if (yreg[i] >= yf - clam && yreg[i] <= yf + clam) {
             if (yreg[i - 1] > yf + clam || yreg[i - 1] < yf - clam) {
@@ -167,26 +171,39 @@ int main(void) {
                 if (yreg[i - 1] > yr0 && yreg[i - 1] < yr1) {
                     fprintf(region_1, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                     fprintf(reinjected1, "%5.15f\n", yreg[i]);
+                    counter1++;
                 }
                 if (yreg[i - 1] > yr1 && yreg[i - 1] < yr2) {
                     fprintf(region_2, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                     fprintf(reinjected2, "%5.15f\n", yreg[i]);
+                    counter2++;
                 }
                 if (yreg[i - 1] > yr2 && yreg[i - 1] < yr3) {
                     fprintf(region_3, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                     fprintf(reinjected3, "%5.15f\n", yreg[i]);
+                    counter3++;
                 }
                 if (yreg[i - 1] > yr3 && yreg[i - 1] < yr4) {
                     fprintf(region_4, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                     fprintf(reinjected4, "%5.15f\n", yreg[i]);
+                    counter4++;
                 }
                 if (yreg[i - 1] > yr5 && yreg[i - 1] < yr6) {
                     fprintf(region_5, "%5.15f  %5.15f\n", yreg[i - 1], yreg[i]);
                     fprintf(reinjected5, "%5.15f\n", yreg[i]);
+                    counter5++;
                 }
             }
         }
     }
+
+    FILE *weights = fopen("../datafiles/rpd_weights.dat", "w");
+
+    fprintf(weights, "%d\n", counter1);
+    fprintf(weights, "%d\n", counter2);
+    fprintf(weights, "%d\n", counter3);
+    fprintf(weights, "%d\n", counter4);
+    fprintf(weights, "%d\n", counter5);
 
     FILE *RPD1, *RPD2, *RPD3, *RPD4, *RPD5;
     RPD1 = fopen("../datafiles/rpd_lorenz_1.dat", "w");
@@ -265,5 +282,6 @@ int main(void) {
     fclose(reinjected3);
     fclose(reinjected4);
     fclose(reinjected5);
+    fclose(weights);
     return 0;
 }

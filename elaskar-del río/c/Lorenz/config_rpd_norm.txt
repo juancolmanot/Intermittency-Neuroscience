@@ -1,0 +1,9 @@
+terminal=pdfcairo
+size=[6,6]
+datafile=../datafiles/rpd_fit_1.dat
+font=Arial,21
+outputfile=../plots/rpd_fit_1.pdf
+cols=[1,3]
+labels=["y","RPD(y)","Numeric\tNormalize\t1"]
+legends=["numerical"]
+nplots=1
