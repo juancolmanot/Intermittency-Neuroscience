@@ -67,12 +67,13 @@ int main(void) {
     double a_c, b_c, c_c;
 
     /* Laminar region */
-    FILE *region_1, *region_2, *region_3, *region_4, *region_5;
+    FILE *region_1, *region_2, *region_3, *region_4, *region_5, *all_regions;
     region_1 = fopen("../datafiles/reinject_region1.dat", "w");
     region_2 = fopen("../datafiles/reinject_region2.dat", "w");
     region_3 = fopen("../datafiles/reinject_region3.dat", "w");
     region_4 = fopen("../datafiles/reinject_region4.dat", "w");
     region_5 = fopen("../datafiles/reinject_region5.dat", "w");
+    all_regions = fopen("../datafiles/reinject_all.dat", "w");
     double yf = 41.2861;
     double clam = 1.85;
     unsigned int count_reinject = 0;
@@ -178,6 +179,7 @@ int main(void) {
                             yreinj[count_reinject] = yi[1];
                             yreinj_prev[count_reinject] = yi_prev;
                             count_reinject++;
+                            fprintf(all_regions, "%5.15f %5.15f\n", yi_prev, yi[1]);
                             fprintf(reinjected, "%5.15f\n", yi[1]);
                             if (yi_prev > yr0 && yi_prev < yr1) {
                                 fprintf(region_1, "%5.15f  %5.15f\n", yi_prev, yi[1]);
@@ -272,6 +274,7 @@ int main(void) {
     fclose(region_2);
     fclose(region_3);
     fclose(region_4);
+    fclose(all_regions);
     fclose(RPD1);
     fclose(RPD2);
     fclose(RPD3);
