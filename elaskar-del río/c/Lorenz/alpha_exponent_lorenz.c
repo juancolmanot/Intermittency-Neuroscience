@@ -12,10 +12,10 @@ int main(void) {
     
     FILE *m_fit, *m_slope;
 
-    m_fit = fopen("../datafiles/m_fit_5.dat", "w");
+    m_fit = fopen("../datafiles/m_fit_2.dat", "w");
     m_slope = fopen("../datafiles/m_slopes.dat", "a");
 
-    char filename[1024] = "../datafiles/m_function_5.dat";
+    char filename[1024] = "../datafiles/m_function_2.dat";
 
     int *shape;
 
@@ -44,6 +44,10 @@ int main(void) {
     for (unsigned int i = 0; i < shape[0]; i++) {
         fprintf(m_fit, "%5.8f %5.8f %5.8f\n", x[i], M_x[i], c0 + c1 * x[i]);
     }
+
+    double alpha;
+
+    alpha = (2 * c0 - 1) / (1 - c0);
 
     fprintf(m_slope, "%5.8f\n", c1);
 

@@ -13,9 +13,9 @@ int main(void) {
     
     FILE *m_region1;
 
-    m_region1 = fopen("../datafiles/m_function_4.dat", "w");
+    m_region1 = fopen("../datafiles/m_function_5.dat", "w");
 
-    char filename[1024] = "../datafiles/reinjected_lorenz_4.dat";
+    char filename[1024] = "../datafiles/reinjected_lorenz_5.dat";
 
     int *shape;
 
@@ -40,10 +40,16 @@ int main(void) {
     gsl_sort_vector(x_reinjected);
 
     double M_i = 0;
+    double c0;
+    c0 = gsl_vector_get(x_reinjected, 0) - 0.5 * gsl_vector_get(x_reinjected, 0);
 
     for (unsigned int i = 0; i < shape[0]; i++){
         M_i += gsl_vector_get(x_reinjected, i);
-        fprintf(m_region1, "%5.15f %5.15f\n", gsl_vector_get(x_reinjected, i), M_i / (double) (i + 1));
+        fprintf(m_region1, "%5.15f %5.15f %5.15f\n",
+            gsl_vector_get(x_reinjected, i),
+            M_i / (double) (i + 1),
+            c0 + gsl_vector_get(x_reinjected, i) * 0.5
+        );
     }
 
     fclose(m_region1);

@@ -12,11 +12,11 @@ int main(void) {
     
     FILE *m_fit_1, *m_fit_2, *m_slope;
 
-    m_fit_1 = fopen("../datafiles/m_fit_4_1.dat", "w");
-    m_fit_2 = fopen("../datafiles/m_fit_4_2.dat", "w");
+    m_fit_1 = fopen("../datafiles/m_fit_1_1.dat", "w");
+    m_fit_2 = fopen("../datafiles/m_fit_1_2.dat", "w");
     m_slope = fopen("../datafiles/m_slopes.dat", "a");
 
-    char filename[1024] = "../datafiles/m_function_4.dat";
+    char filename[1024] = "../datafiles/m_function_1.dat";
 
     int *shape;
 
@@ -38,6 +38,7 @@ int main(void) {
     for (unsigned int i = 0; i < shape[0]; i++){
         x[i] = gsl_matrix_get(matrix_data, i, 0);
         M_x[i] = gsl_matrix_get(matrix_data, i, 1);
+        // printf("i: %d; x[i]: %f; Mx[i]: %f\n", i, x[i], M_x[i]);
     }
 
     int breakcount1, breakcount2;
@@ -45,11 +46,11 @@ int main(void) {
     int d = 1;
 
     for (unsigned int i = 0; i < shape[0]; i++){
-        if (x[i] >= 40.45 && d == 1) {
+        if (x[i] >= 40 && d == 1) {
             breakcount1 = i;
             d = 0;
         }
-        if (x[i] >= 40.75) {
+        if (x[i] >= 40.4) {
             breakcount2 = i;
             break;
         }
