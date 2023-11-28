@@ -12,10 +12,10 @@ int main(void) {
     
     FILE *m_fit, *m_slope;
 
-    m_fit = fopen("../datafiles/m_fit_2.dat", "w");
+    m_fit = fopen("../datafiles/m_fit_9.dat", "w");
     m_slope = fopen("../datafiles/m_slopes.dat", "a");
 
-    char filename[1024] = "../datafiles/m_function_2.dat";
+    char filename[1024] = "../datafiles/m_function_9.dat";
 
     int *shape;
 

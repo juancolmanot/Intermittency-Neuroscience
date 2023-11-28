@@ -1,9 +1,0 @@
-terminal=pdfcairo
-size=[6,6]
-datafile=../datafiles/m_function_all.dat
-font=Arial,21
-outputfile=../plots/m_total.pdf
-cols=[1,2]
-labels=["y","M(y)","FunciónM"]
-legends=["all"]
-nplots=1

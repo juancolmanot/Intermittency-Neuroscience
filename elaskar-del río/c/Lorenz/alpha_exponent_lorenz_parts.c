@@ -12,11 +12,11 @@ int main(void) {
     
     FILE *m_fit_1, *m_fit_2, *m_slope;
 
-    m_fit_1 = fopen("../datafiles/m_fit_1_1.dat", "w");
-    m_fit_2 = fopen("../datafiles/m_fit_1_2.dat", "w");
+    m_fit_1 = fopen("../datafiles/m_fit_7_1.dat", "w");
+    m_fit_2 = fopen("../datafiles/m_fit_7_2.dat", "w");
     m_slope = fopen("../datafiles/m_slopes.dat", "a");
 
-    char filename[1024] = "../datafiles/m_function_1.dat";
+    char filename[1024] = "../datafiles/m_function_7.dat";
 
     int *shape;
 
@@ -46,11 +46,11 @@ int main(void) {
     int d = 1;
 
     for (unsigned int i = 0; i < shape[0]; i++){
-        if (x[i] >= 40 && d == 1) {
+        if (x[i] >= 40.35 && d == 1) {
             breakcount1 = i;
             d = 0;
         }
-        if (x[i] >= 40.4) {
+        if (x[i] >= 40.85) {
             breakcount2 = i;
             break;
         }

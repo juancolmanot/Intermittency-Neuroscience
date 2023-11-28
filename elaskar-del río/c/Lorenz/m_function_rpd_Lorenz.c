@@ -13,9 +13,9 @@ int main(void) {
     
     FILE *m_region1;
 
-    m_region1 = fopen("../datafiles/m_function_5.dat", "w");
+    m_region1 = fopen("../datafiles/m_function_9.dat", "w");
 
-    char filename[1024] = "../datafiles/reinjected_lorenz_5.dat";
+    char filename[1024] = "../datafiles/reinjected_lorenz_9.dat";
 
     int *shape;
 

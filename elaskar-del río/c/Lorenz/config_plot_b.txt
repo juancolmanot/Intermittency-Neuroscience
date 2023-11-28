@@ -1,5 +1,0 @@
-config1b.txt
-config2b.txt
-config3b.txt
-config4b.txt
-config5b.txt

@@ -43,9 +43,9 @@ int main(void) {
     /* Alocamos arreglo */
     rpd = calloc(shape1[0], sizeof(double));
 
-    printf("rows1: %d, cols1: %d\n", shape1[0], shape1[1]);
-    printf("rows2: %d, cols2: %d\n", shape2[0], shape2[1]);
-    printf("rows3: %d, cols3: %d\n", shape3[0], shape3[1]);
+    printf("rpd lorenz 1 : rows1: %d, cols1: %d\n", shape1[0], shape1[1]);
+    printf("rpd weights : rows2: %d, cols2: %d\n", shape2[0], shape2[1]);
+    printf("m slopes: rows3: %d, cols3: %d\n", shape3[0], shape3[1]);
 
     /* Declaramos y alocamos arreglos para almacenar datos */
     gsl_vector *count_data, *rpd_x, *x, *m_slopes;
@@ -82,14 +82,17 @@ int main(void) {
     /* Computamos los diferentes parámetros */
     wi = (double) gsl_vector_get(count_data, 4) / (double) count_tot;
     m = gsl_vector_get(m_slopes, 6);
+    // m = 0.5;
     alpha = (2 * m - 1) / (1 - m);
+
+    printf("m: %f, alpha: %f\n", m, alpha);
 
     double integral_numeric, dx, b_numeric;
     dx = (gsl_vector_get(x, 1) - gsl_vector_get(x, 0));
 
     for (unsigned int i = 0; i < shape1[0]; i++) {
         integral_numeric += gsl_vector_get(rpd_x, i);
-        printf("%f %f %f\n", gsl_vector_get(x, i), gsl_vector_get(rpd_x, i), integral_numeric);
+        // printf("%f %f %f\n", gsl_vector_get(x, i), gsl_vector_get(rpd_x, i), integral_numeric);
     }
 
     integral_numeric = integral_numeric * dx;
@@ -100,7 +103,8 @@ int main(void) {
     double integral_rpd, xc, xi;
     
     /* Límite inferior de la región laminar y paso de integración del dominio */
-    xc = gsl_vector_get(x, 0);
+    // xc = gsl_vector_get(x, 0);
+    xc = 39;
 
     FILE *integral_calc = fopen("../datafiles/integral_test.dat", "w");
 
@@ -122,13 +126,6 @@ int main(void) {
         xi = gsl_vector_get(x, i);
         fprintf(rpd_fit, "%5.8f %5.8f %5.8f\n", xi, b_numeric * gsl_vector_get(rpd_x, i), b * powf(xi - xc, alpha));
     }
-    // double m_2, alpha_2;
-    // m_2 = gsl_vector_get(m_slopes, 5);
-    // alpha_2 = (2 * m_2 - 1) / (1 - m_2);
-    // for (unsigned int i = 50; i < shape1[0]; i++) {
-    //     xi = gsl_vector_get(x, i);
-    //     fprintf(rpd_fit, "%5.8f %5.8f %5.8f\n", xi, b_numeric * gsl_vector_get(rpd_x, i), b * powf(xi - xc, alpha_2));
-    // }
 
     free(shape1);
     free(shape2);

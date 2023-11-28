@@ -1,9 +1,0 @@
-terminal=pdfcairo
-size=[4,4]
-datafile=../datafiles/rpd_lorenz_5.dat
-font=Arial,21
-outputfile=../plots/rpd_lorenz_5.pdf
-cols=[1,2]
-labels=["y(i-1)","y(i)","RPD-region5"]
-legends=["mapa-y"]
-nplots=1
