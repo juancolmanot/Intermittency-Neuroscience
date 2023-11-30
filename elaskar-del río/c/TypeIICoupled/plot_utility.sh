@@ -28,11 +28,18 @@ help_panel(){
     echo -e "\t\tfigura multiple: multiples figuras con una o multiples líneas [2]"
 }
 
+exec_plot_0(){
+    cfile=$1
+    type=$2
+    arguments=$(grep '=' $cfile | awk -F'=' '{print $2}')
+    gnuplot -c /mnt/d/juan/doctorado/cursos/modulosgnuplot/gnup_ss.gp $arguments
+}
+
 exec_plot_1(){
     cfile=$1
     type=$2
     arguments=$(grep '=' $cfile | awk -F'=' '{print $2}')
-    gnuplot -c ../../../../modulosgnuplot/gnup_sm.gp $arguments
+    gnuplot -c /mnt/d/juan/doctorado/cursos/modulosgnuplot/gnup_sm.gp $arguments
 }
 
 exec_plot_2(){
@@ -41,11 +48,15 @@ exec_plot_2(){
     while read line;
     do
         arguments=$(grep '=' $line | awk -F'=' '{print $2}')
-        #echo $arguments;
-        gnuplot -c /home/juan/cursos/modulosgnuplot/gnup_sm.gp $arguments
+        gnuplot -c /mnt/d/juan/doctorado/cursos/modulosgnuplot/gnup_ss.gp $arguments
     done < $cfiles
-    
-    # gnuplot -c ../../../../modulosgnuplot/gnup_sm.gp $arguments
+}
+
+exec_plot_3(){
+    cfile=$1
+    type=$2
+    arguments=$(grep '=' $cfile | awk -F'=' '{print $2}')
+    gnuplot -c /mnt/d/juan/doctorado/cursos/modulosgnuplot/gnup_mm.gp $arguments
 }
 
 
@@ -68,10 +79,14 @@ while getopts ":c:t:h" arg; do
 done
 
 if [ $parameter_counter == 2 ]; then
-    if  [ $type == 1 ]; then
+    if [ $type == 0 ]; then
+        exec_plot_0 $cfile $type
+    elif  [ $type == 1 ]; then
         exec_plot_1 $cfile $type
-    else
+    elif [ $type == 2 ]; then
         exec_plot_2 $cfile $type
+    elif [ $type == 3 ]; then
+        exec_plot_3 $cfile $type
     fi
 else
     help_panel

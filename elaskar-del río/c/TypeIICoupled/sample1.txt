@@ -1,9 +1,9 @@
 terminal=pdfcairo
-size=[4,4]
-datafile=../datafiles/evolution_lorenz.dat
+size=[6,6]
+datafile=../datafiles/evolution_typeII_coupled.dat
 font=Arial,14
-outputfile=test_plot1.pdf
+outputfile=../plots/evolution_typeII_coupled.pdf
 cols=[1,2,1,3]
-labels=["t","x,y","testLorenz"]
+labels=["t","x-y","Time-Evol"]
 legends=["x","y"]
 nplots=2
