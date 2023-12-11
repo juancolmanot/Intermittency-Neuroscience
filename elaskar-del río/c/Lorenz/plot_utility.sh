@@ -59,6 +59,13 @@ exec_plot_3(){
     gnuplot -c /home/juan/cursos/modulosgnuplot/gnup_mm.gp $arguments
 }
 
+exec_plot_4(){
+    cfile=$1
+    type=$2
+    arguments=$(grep '=' $cfile | awk -F'=' '{print $2}')
+    gnuplot -c /home/juan/cursos/modulosgnuplot/gnup_single_manual.gp $arguments
+}
+
 
 if [ -z $1 ]; then help_panel; exit 1; fi
 declare -i parameter_counter=0
@@ -87,6 +94,8 @@ if [ $parameter_counter == 2 ]; then
         exec_plot_2 $cfile $type
     elif [ $type == 3 ]; then
         exec_plot_3 $cfile $type
+    elif [ $type == 4 ]; then
+        exec_plot_4 $cfile $type
     fi
 else
     help_panel
