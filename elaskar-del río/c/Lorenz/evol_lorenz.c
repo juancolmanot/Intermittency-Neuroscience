@@ -13,14 +13,14 @@
 
 int main(void) {
 
-    FILE *evolution = fopen("../datafiles/evolution_lorenz.dat", "w");
+    FILE *map_lorenz = fopen("../datafiles/map_lorenz_16607.dat", "w");
 
     unsigned long int seed = (unsigned long int)time(NULL);
 
     Parameters *p = malloc(sizeof(Parameters));
 
     p->a = 10.0;
-    p->b = 166.2;
+    p->b = 166.07;
     p->c = 8.0 / 3.0;
 
     double rel_err = 1e-14, abs_err = 1e-12;
@@ -43,7 +43,7 @@ int main(void) {
 
     /* Passes counter */
     unsigned int counter = 0;
-    unsigned int pass_target = 100;
+    unsigned int pass_target = 1000;
 
     /* Arrays for x, y, z */
     double xi[3], yi[3], zi[3];
@@ -63,6 +63,9 @@ int main(void) {
     xi[0] = x[0];
     yi[0] = x[1];
     zi[0] = x[2];
+
+    /* Store previous iteration */
+    double zprev, yprev;
 
     /* Initialize the first three points */
     for (unsigned int i = 1; i < 3; i++) {
@@ -110,19 +113,24 @@ int main(void) {
                     zfit[1] = zi[1];
                     zfit[2] = zi[2];
                     gsl_regression_quadratic(xfit, yfit, 3, coefficients);
-                    a_c = coefficients[0];
+                    a_c = coefficients[2];
                     b_c = coefficients[1];
-                    c_c = coefficients[2];
+                    c_c = coefficients[0];
                     yreg[counter] = a_c * xp * xp + b_c * xp + c_c;
                     gsl_regression_quadratic(xfit, zfit, 3, coefficients);
-                    a_c = coefficients[0];
+                    a_c = coefficients[2];
                     b_c = coefficients[1];
-                    c_c = coefficients[2];
+                    c_c = coefficients[0];
                     zreg[counter] = a_c * xp * xp + b_c * xp + c_c;
                     gsl_matrix_set(ty, 0, counter, t);
                     gsl_matrix_set(ty, 1, counter, yreg[counter]);
                     gsl_matrix_set(tz, 0, counter, t);
                     gsl_matrix_set(tz, 1, counter, zreg[counter]);
+                    if (counter > 1) {
+                        fprintf(map_lorenz, "%5.8f %5.8f %5.8f %5.8f\n", yprev, yreg[counter], zprev, zreg[counter]);
+                    }
+                    yprev = yreg[counter];
+                    zprev = zreg[counter];
                     counter++;
                 }
             }
@@ -132,6 +140,6 @@ int main(void) {
     gsl_odeiv2_control_free(c);
     gsl_odeiv2_step_free(s);
     gsl_rng_free(rng);
-    fclose(evolution);
+    fclose(map_lorenz);
     return 0;
 }

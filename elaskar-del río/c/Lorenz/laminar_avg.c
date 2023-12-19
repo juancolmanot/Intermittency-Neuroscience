@@ -16,7 +16,7 @@ int main(void) {
 
     double *bs = calloc(20, sizeof(double));
 
-    bs = linspace(166.1, 166.4, 20);
+    bs = linspace(166.07, 166.3, 20);
 
     FILE *laminar_avg = fopen("../datafiles/laminar_avg.dat", "w");
 
@@ -51,7 +51,7 @@ int main(void) {
         /* Passes counter */
         unsigned int counter = 0;
         unsigned int pass_target = 800000;
-        unsigned int reinject_target = 10000;
+        unsigned int reinject_target = 5000;
 
         /* Laminar lengths counter */
         unsigned int laminar_start, laminar_end;
@@ -196,15 +196,19 @@ int main(void) {
 
         b = 1 / int_pdll;
 
-        lj = 1;
+        lj = 0;
 
         for (unsigned int i = 0; i < max_l; i++) {
             lj++;
             lavg += b * laminar_lengts_histogram[i] * lj;
         }
 
-        printf("k: %d, lavg: %5.10f\n", k, lavg);
-        fprintf(laminar_avg, "%5.10f %5.10f\n", bs[k], lavg);
+        double lavg2;
+
+        lavg2 = gsl_stats_mean(laminar_lengths, 1, reinject_target);
+
+        printf("k: %d, lavg: %5.10f, lavg2: %5.10f, maxl: %5.10f, 1/maxl^2: %5.10f\n", k, lavg, lavg2, max_l, 1 / (max_l * max_l));
+        fprintf(laminar_avg, "%5.10f %5.10f %5.10f %5.10f %5.10f\n", bs[k], lavg, lavg2, max_l, 1 / (max_l * max_l));
 
         gsl_odeiv2_evolve_free(e);
         gsl_odeiv2_control_free(c);

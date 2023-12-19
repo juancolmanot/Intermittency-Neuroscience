@@ -43,7 +43,7 @@ int main(void) {
     /* Passes counter */
     unsigned int counter = 0;
     unsigned int pass_target = 800000;
-    unsigned int reinject_target = 10000;
+    unsigned int reinject_target = 4000;
 
     /* Laminar lengths counter */
     unsigned int laminar_start, laminar_end;
@@ -138,7 +138,7 @@ int main(void) {
                             yreinj_prev[count_reinject] = yi_prev;
                             count_reinject++;
                             laminar_start = counter;
-                            if (count_reinject % 1000 == 0) {
+                            if (count_reinject % 500 == 0) {
                                 printf("count reinject: %d\n", count_reinject);
                             }
                         }
@@ -164,7 +164,7 @@ int main(void) {
 
     laminar_lengts_histogram = calloc(n_bins, sizeof(double));
 
-    lj = 1;
+    lj = 0;
 
     /* Increment y from min to max to generate bins */
     for (unsigned int i = 0; i < max_l; i++) {
@@ -194,8 +194,9 @@ int main(void) {
     for (unsigned int i = 0; i < max_l; i++) {
         fprintf(laminar, "%5.10f %5.10f\n", lj, b * laminar_lengts_histogram[i]);
         lj++;
-        lavg += b * laminar_lengts_histogram[i] * lj;
     }
+
+    lavg = gsl_stats_mean(laminar_lengths, 1, reinject_target);
 
     printf("lavg: %5.10f\n", lavg);
 
